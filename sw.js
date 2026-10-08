@@ -1,4 +1,4 @@
-const CACHE = "halal-menu-f8e00ccaae";
+const CACHE = "halal-menu-c9cecbd9d7";
 const IMAGES = "halal-menu-images";
 const SHELL = ["./", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png", "favicon-32.png"];
 

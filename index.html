@@ -267,6 +267,7 @@ dialog input[type=text], dialog input[type=search] { background: var(--card); co
     </div>
     <div class="controls">
       <button id="installBtn" class="pill-btn primary" hidden data-i18n="install"></button>
+      <button id="reminderTopBtn" class="pill-btn" data-i18n="btn_reminder"></button>
       <label class="ctl" data-i18n-title="mode_title">
         <span data-i18n="mode"></span>
         <select id="mode">
@@ -1869,6 +1870,7 @@ $("#nextWeek").onclick = () => loadWeek(addDays(state.week?.week_start || state.
 $("#todayBtn").onclick = () => loadWeek(state.today);
 $("#themeBtn").onclick = () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
 $("#allergyBtn").onclick = openAllergies;
+$("#reminderTopBtn").onclick = openReminder;
 $("#printBtn").onclick = printWeek;
 $("#prayer").onclick = openPrayer;
 (async function init() {
