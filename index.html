@@ -1,0 +1,1896 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Halal Menu Check</title>
+  <meta name="description" content="Which canteen dishes are halal-friendly today? Daily check of the canteen menu with clear explanations." />
+  <meta name="theme-color" content="#0f8a5f" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Halal Menu" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <style>
+:root {
+  --bg: #f5f7f6;
+  --card: #ffffff;
+  --text: #1d2a26;
+  --muted: #66756f;
+  --border: #e3e9e6;
+  --accent: #0f8a5f;
+  --green: #16a34a;
+  --green-bg: #e8f7ee;
+  --orange: #d97706;
+  --orange-bg: #fff4e0;
+  --red: #dc2626;
+  --red-bg: #fdecec;
+  --grey: #8a958f;
+  --grey-bg: #eef1ef;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.05);
+  --radius: 14px;
+}
+[data-theme="dark"] {
+  --bg: #0f1513;
+  --card: #18211e;
+  --text: #e6eeea;
+  --muted: #93a39c;
+  --border: #26322e;
+  --accent: #34d399;
+  --green-bg: #12301f;
+  --orange-bg: #33260f;
+  --red-bg: #3a1616;
+  --grey-bg: #222b28;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.3);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.45 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+main { max-width: 1240px; margin: 0 auto; padding: 16px; }
+h1 { font-size: 20px; margin: 0; }
+h2 { font-size: 16px; margin: 0 0 12px; }
+a { color: var(--accent); }
+.muted { color: var(--muted); }
+.topbar {
+  position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; flex-wrap: wrap; padding: 10px 20px; background: var(--card); border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; gap: 10px; align-items: center; }
+.logo { width: 36px; height: 36px; border-radius: 9px; }
+.sub { font-size: 13px; text-decoration: none; }
+.controls { display: flex; gap: 10px; align-items: center; }
+.ctl { display: flex; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); }
+select, input[type=search] {
+  background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 7px 10px; font: inherit;
+}
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.seg button { border: 0; background: transparent; color: var(--text); padding: 7px 10px; cursor: pointer; font-weight: 600; }
+.seg button.active { background: var(--accent); color: #fff; }
+.icon-btn, .pill-btn {
+  border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 10px;
+  padding: 7px 12px; cursor: pointer; font: inherit;
+}
+.icon-btn:hover, .pill-btn:hover { border-color: var(--accent); }
+.pill-btn { border-radius: 999px; font-weight: 600; }
+.pill-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.pill-btn.ghost { background: transparent; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
+.weekbar { display: flex; align-items: center; gap: 10px; margin: 6px 0 12px; }
+.weektitle { display: flex; flex-direction: column; flex: 1; text-align: center; }
+.weektitle span { color: var(--muted); font-size: 13px; }
+.daytabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 14px; }
+.daytab {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; cursor: pointer;
+  text-align: left; color: var(--text); font: inherit; position: relative;
+}
+.daytab.active { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent); }
+.daytab .d { font-weight: 700; }
+.daytab .dt { color: var(--muted); font-size: 12px; }
+.daytab .bar { display: flex; height: 6px; border-radius: 4px; overflow: hidden; margin-top: 6px; background: var(--grey-bg); }
+.daytab .today-dot { position: absolute; top: 8px; right: 10px; font-size: 11px; color: var(--accent); font-weight: 700; }
+.daytab .fav-dot { position: absolute; bottom: 14px; right: 10px; font-size: 11px; }
+.seg-green { background: var(--green); } .seg-orange { background: var(--orange); } .seg-red { background: var(--red); } .seg-grey { background: var(--grey); }
+.hero { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; margin-bottom: 14px; }
+.hero .big { font-size: 28px; font-weight: 800; line-height: 1.15; }
+.hero .big .n { color: var(--green); }
+.hero .counts { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+.count { padding: 6px 10px; border-radius: 10px; font-weight: 600; font-size: 13px; }
+.count.green { background: var(--green-bg); color: var(--green); }
+.count.orange { background: var(--orange-bg); color: var(--orange); }
+.count.red { background: var(--red-bg); color: var(--red); }
+.count.grey { background: var(--grey-bg); color: var(--grey); }
+.hero .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.best { border-radius: 12px; background: var(--green-bg); padding: 12px; display: flex; gap: 12px; align-items: center; }
+.best img { width: 84px; height: 84px; object-fit: cover; border-radius: 10px; flex: none; }
+.best .lbl { font-size: 12px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .04em; }
+.best .nm { font-weight: 700; }
+.best .why { font-size: 12px; color: var(--muted); }
+.best.none { background: var(--orange-bg); }
+.best.none .lbl { color: var(--orange); }
+.hero .actions a.pill-btn { text-decoration: none; }
+.toolbar { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
+.toolbar-right { display: flex; gap: 10px; align-items: center; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 999px; padding: 6px 12px; cursor: pointer; font: inherit; font-size: 13px; }
+.chip.active { background: var(--text); color: var(--card); border-color: var(--text); }
+.toggle { font-size: 13px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.status { color: var(--muted); margin: 8px 0; }
+.status:empty { display: none; }
+.status.error { color: var(--red); }
+.status.info { background: var(--orange-bg); color: var(--text); border-radius: 10px; padding: 8px 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.dish { display: flex; flex-direction: column; overflow: hidden; padding: 0; border-left: 6px solid var(--grey); }
+.dish.green { border-left-color: var(--green); } .dish.orange { border-left-color: var(--orange); }
+.dish.red { border-left-color: var(--red); } .dish.grey { border-left-color: var(--grey); }
+.dish.red .photo, .dish.red .name { opacity: .75; }
+.dish .top { display: flex; gap: 12px; padding: 14px 14px 8px; }
+.dish .photo { width: 92px; height: 92px; border-radius: 10px; object-fit: cover; flex: none; background: var(--grey-bg); display: flex; align-items: center; justify-content: center; font-size: 34px; }
+.dish .meta { flex: 1; min-width: 0; }
+.dish .cat { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; display: flex; justify-content: space-between; gap: 6px; }
+.dish .name { font-weight: 650; margin: 2px 0 6px; }
+.dish .alt { font-size: 12px; color: var(--muted); margin-top: -4px; margin-bottom: 6px; }
+.pill { display: inline-flex; gap: 4px; align-items: center; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.pill.green { background: var(--green-bg); color: var(--green); } .pill.orange { background: var(--orange-bg); color: var(--orange); }
+.pill.red { background: var(--red-bg); color: var(--red); } .pill.grey { background: var(--grey-bg); color: var(--grey); }
+.badge { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; margin-left: 4px; }
+.badge.best-b { background: #fde68a; color: #7c5800; } .badge.sold { background: var(--grey-bg); color: var(--muted); }
+.findings { list-style: none; margin: 0; padding: 0 14px 6px; font-size: 13px; }
+.findings li { padding: 3px 0; display: flex; gap: 6px; }
+.findings .haram { color: var(--red); } .findings .doubtful { color: var(--orange); }
+.findings .caution { color: var(--muted); } .findings .ok { color: var(--green); }
+.dish .foot { margin-top: auto; padding: 8px 14px 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.tag { background: var(--grey-bg); border-radius: 6px; padding: 2px 6px; font-size: 11px; }
+.allergen { display: inline-block; min-width: 18px; text-align: center; border: 1px solid var(--border); border-radius: 5px; padding: 0 4px; margin-right: 2px; font-size: 11px; cursor: help; }
+.fav { background: none; border: 0; font-size: 18px; cursor: pointer; padding: 0; line-height: 1; filter: grayscale(1); opacity: .5; }
+.fav.on { filter: none; opacity: 1; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.ov-row { display: grid; grid-template-columns: 110px 1fr 54px; align-items: center; gap: 10px; padding: 5px 0; cursor: pointer; }
+.ov-row:hover .ov-day { color: var(--accent); }
+.ov-bar { display: flex; height: 14px; border-radius: 6px; overflow: hidden; background: var(--grey-bg); }
+.ov-pct { text-align: right; font-weight: 700; font-size: 13px; }
+.trend svg { width: 100%; height: auto; }
+.trend text { fill: var(--muted); font-size: 11px; }
+.legend ul { margin: 0 0 8px; padding-left: 18px; }
+.legend li { margin: 4px 0; }
+.disclaimer { background: var(--orange-bg); border-radius: 10px; padding: 10px 12px; font-size: 13px; margin: 0; }
+.welcome { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 14px; background: var(--green-bg); border-color: transparent; }
+.welcome[hidden] { display: none; }
+.reminder-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.reminder-row input[type=time] { background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 6px 8px; font: inherit; margin-left: 6px; }
+.steps { margin: 8px 0 14px; padding-left: 20px; }
+.rem-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0; }
+.rem-opt { border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+.rem-opt h3 { margin-top: 0; }
+.rem-opt .steps { font-size: 13px; }
+.small-link { font-size: 12px; color: var(--muted); display: inline-block; margin-top: 8px; }
+@media (max-width: 640px) { .rem-options { grid-template-columns: 1fr; } }
+dialog { border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--text); max-width: 640px; width: 92vw; }
+dialog::backdrop { background: rgba(0,0,0,.4); }
+dialog li { margin: 8px 0; }
+dialog h3 { font-size: 14px; margin: 16px 0 6px; }
+dialog input[type=text], dialog input[type=search] { background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 7px 10px; font: inherit; }
+.canteen-results { max-height: 200px; overflow: auto; margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+.canteen-results button { text-align: left; border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 8px; padding: 6px 10px; cursor: pointer; font: inherit; font-size: 13px; }
+.canteen-results button:hover { border-color: var(--accent); }
+.canteen-results small { color: var(--muted); }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: var(--card);
+  padding: 10px 16px; border-radius: 10px; opacity: 0; transition: .25s; pointer-events: none; z-index: 50;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.empty { text-align: center; padding: 40px; color: var(--muted); }
+.small { font-size: 12px; }
+.prayer {
+  display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; justify-content: center; width: 100%;
+  border: 0; border-bottom: 1px solid var(--border); background: var(--green-bg); color: var(--text);
+  padding: 7px 16px; font: inherit; font-size: 13px; cursor: pointer;
+}
+.prayer[hidden] { display: none; }
+.prayer .pt b { font-weight: 600; color: var(--muted); margin-right: 3px; }
+.prayer .pt.next { background: var(--accent); color: #fff; border-radius: 999px; padding: 1px 9px; }
+.prayer .pt.next b { color: #fff; }
+.prayer .pt-city { font-weight: 700; }
+.prayer .pt-next, .prayer .pt-hijri { color: var(--muted); }
+.prayer-table { margin: 6px 0 12px; }
+.prayer-table .prow { display: flex; justify-content: space-between; padding: 6px 2px; border-bottom: 1px solid var(--border); }
+.card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px; }
+.card-head h2 { margin: 0; }
+.badge.kitchen { background: var(--green-bg); color: var(--green); display: inline-block; margin: 4px 0 0 6px; }
+.allergy-hit { margin-top: 6px; font-size: 12px; font-weight: 600; color: var(--red); }
+.allergen.hit { border-color: var(--red); background: var(--red-bg); color: var(--red); font-weight: 700; }
+.allergy-note { margin: -4px 0 10px; font-size: 13px; }
+.allergy-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px; margin: 10px 0; }
+.allergy-item { border: 1px solid var(--border); border-radius: 10px; padding: 7px 10px; cursor: pointer; display: flex; gap: 6px; align-items: center; }
+.allergy-item.on { border-color: var(--red); background: var(--red-bg); }
+.allergy-hide { margin: 6px 0 14px; }
+#allergyBtn.active { border-color: var(--red); color: var(--red); }
+.ask-list li { margin: 10px 0; }
+.ask-list .q-de { font-weight: 600; }
+.ask-list .q-en { color: var(--muted); font-size: 13px; margin-top: 2px; }
+.ask-list li.none { list-style: none; }
+.canteen-results button.picked { border-color: var(--accent); }
+.footer { text-align: center; color: var(--muted); font-size: 12px; padding: 18px 10px 30px; }
+.print-view { display: none; }
+@media print {
+  @page { size: A4; margin: 12mm; }
+  body { background: #fff !important; color: #000 !important; }
+  body > *:not(#printView) { display: none !important; }
+  .print-view { display: block !important; font: 11pt/1.35 "Segoe UI", system-ui, sans-serif; color: #000; }
+  .phead { display: flex; gap: 12px; align-items: center; border-bottom: 3px solid #0f8a5f; padding-bottom: 8px; margin-bottom: 10px; }
+  .phead img { width: 46px; height: 46px; border-radius: 10px; }
+  .phead h1 { font-size: 20pt; margin: 0; }
+  .ptable { width: 100%; border-collapse: collapse; }
+  .ptable th { text-align: left; background: #e8f7ee; padding: 6px 8px; font-size: 10.5pt; }
+  .ptable td { border-bottom: 1px solid #ccc; padding: 6px 8px; vertical-align: top; }
+  .ptable ul { margin: 0; padding-left: 14px; }
+  .ptable small { color: #555; }
+  .pday { width: 16%; white-space: nowrap; }
+  .pbest { font-weight: 700; }
+  .pfoot { display: flex; gap: 14px; align-items: center; margin-top: 12px; font-size: 10pt; }
+  .pqr svg { width: 30mm; height: 30mm; display: block; }
+  tr { break-inside: avoid; }
+}
+@media (max-width: 800px) {
+  .hero, .two-col { grid-template-columns: 1fr; }
+  .daytabs { grid-template-columns: repeat(4, 1fr); }
+  .hero .big { font-size: 22px; }
+  .topbar { padding: 8px 12px; }
+  .controls { flex-wrap: wrap; justify-content: flex-end; }
+  .ctl > span { display: none; }
+  .toolbar-right { flex-wrap: wrap; }
+  .toolbar-right input[type=search] { flex: 1; min-width: 140px; }
+  .grid { grid-template-columns: 1fr; }
+  .pill-btn, .chip { padding: 8px 12px; }
+  .prayer { font-size: 12px; gap: 4px 10px; }
+  .prayer .pt-hijri { display: none; }
+}
+@media (display-mode: standalone) {
+  .topbar { padding-top: max(10px, env(safe-area-inset-top)); }
+}
+
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img class="logo" src="icon-192.png" alt="" width="36" height="36" />
+      <div>
+        <h1 data-i18n="title">Halal Menu Check</h1>
+        <a id="storeLink" class="sub" target="_blank" rel="noopener"></a>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="installBtn" class="pill-btn primary" hidden data-i18n="install"></button>
+      <label class="ctl" data-i18n-title="mode_title">
+        <span data-i18n="mode"></span>
+        <select id="mode">
+          <option value="standard" data-i18n="mode_standard"></option>
+          <option value="strict" data-i18n="mode_strict"></option>
+          <option value="relaxed" data-i18n="mode_relaxed"></option>
+        </select>
+      </label>
+      <div class="seg" id="langSeg" data-i18n-title="lang_title">
+        <button data-lang="en">EN</button><button data-lang="de">DE</button>
+      </div>
+      <button id="themeBtn" class="icon-btn" data-i18n-title="theme_title">🌙</button>
+      <button id="settingsBtn" class="icon-btn" data-i18n-title="settings_title" hidden>⚙️</button>
+    </div>
+  </header>
+
+  <button id="prayer" class="prayer" hidden></button>
+
+  <main>
+    <section class="weekbar">
+      <button id="prevWeek" class="icon-btn" data-i18n-title="prev_week">◀</button>
+      <div class="weektitle"><strong id="weekTitle"></strong><span id="weekRange"></span></div>
+      <button id="nextWeek" class="icon-btn" data-i18n-title="next_week">▶</button>
+      <button id="todayBtn" class="pill-btn" data-i18n="today"></button>
+    </section>
+
+    <nav id="dayTabs" class="daytabs"></nav>
+
+    <section id="welcome" class="card welcome" hidden>
+      <div>
+        <div data-i18n-html="welcome_html"></div>
+        <div class="muted" style="margin-top:4px" data-i18n-html="welcome_tip_html"></div>
+      </div>
+      <button id="welcomeClose" class="icon-btn" data-i18n-title="close">✕</button>
+    </section>
+
+    <div id="status" class="status"></div>
+    <section id="hero" class="hero card"></section>
+
+    <section class="toolbar">
+      <div class="chips" id="filterChips">
+        <button data-filter="all" class="chip active" data-i18n="filter_all"></button>
+        <button data-filter="halal" class="chip" data-i18n="filter_halal"></button>
+        <button data-filter="doubtful" class="chip" data-i18n="filter_doubtful"></button>
+        <button data-filter="haram" class="chip" data-i18n="filter_haram"></button>
+        <button data-filter="fav" class="chip" data-i18n="filter_fav"></button>
+      </div>
+      <div class="toolbar-right">
+        <button id="allergyBtn" class="chip"></button>
+        <label class="toggle"><input type="checkbox" id="hideNight" /> <span data-i18n="hide_night"></span></label>
+        <input id="search" type="search" data-i18n-ph="search_ph" />
+      </div>
+    </section>
+
+    <div id="allergyNote" class="muted allergy-note" hidden></div>
+    <section id="dishes" class="grid"></section>
+
+    <section class="two-col">
+      <div class="card">
+        <div class="card-head">
+          <h2 data-i18n="overview_h"></h2>
+          <button id="printBtn" class="pill-btn" data-i18n="print_btn"></button>
+        </div>
+        <div id="weekOverview"></div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="trend_h"></h2>
+        <div id="trend" class="trend"></div>
+      </div>
+    </section>
+
+    <section class="card legend">
+      <h2 data-i18n="how_h"></h2>
+      <ul data-i18n-html="how_list_html"></ul>
+      <p class="disclaimer" data-i18n-html="disclaimer_html"></p>
+    </section>
+
+    <footer class="footer" data-i18n-html="footer_html"></footer>
+  </main>
+
+  <dialog id="reminderDialog">
+    <form method="dialog">
+      <h2 data-i18n="reminder_h"></h2>
+      <div class="reminder-row">
+        <label><span data-i18n="rem_time"></span> <input id="remTime" type="time" value="10:30" /></label>
+        <label class="toggle"><input id="remWeekend" type="checkbox" /> <span data-i18n="rem_weekend"></span></label>
+      </div>
+      <div class="rem-options">
+        <div class="rem-opt">
+          <h3 data-i18n="rem_win_h"></h3>
+          <p class="muted" data-i18n="rem_win_p"></p>
+          <ol class="steps" data-i18n-html="rem_win_steps_html"></ol>
+          <button type="button" id="remWin" class="pill-btn primary" data-i18n="download"></button>
+          <div><a href="#" id="remWinRemove" class="small-link" data-i18n="rem_win_remove"></a></div>
+        </div>
+        <div class="rem-opt">
+          <h3 data-i18n="rem_cal_h"></h3>
+          <p class="muted" data-i18n="rem_cal_p"></p>
+          <ol class="steps" data-i18n-html="rem_cal_steps_html"></ol>
+          <button type="button" id="remDownload" class="pill-btn" data-i18n="download"></button>
+        </div>
+      </div>
+      <div class="dialog-actions"><button class="pill-btn ghost" data-i18n="close"></button></div>
+    </form>
+  </dialog>
+
+  <dialog id="askDialog">
+    <form method="dialog">
+      <h2 data-i18n="ask_h"></h2>
+      <p class="muted" data-i18n="ask_intro"></p>
+      <ol id="askList" class="ask-list"></ol>
+      <div class="dialog-actions">
+        <button type="button" id="copyAskDe" class="pill-btn" data-i18n="copy_de"></button>
+        <button type="button" id="copyAskEn" class="pill-btn" data-i18n="copy_en"></button>
+        <button class="pill-btn ghost" data-i18n="close"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="allergyDialog">
+    <form method="dialog">
+      <h2 data-i18n="allergy_h"></h2>
+      <p class="muted" data-i18n="allergy_p"></p>
+      <div id="allergyList" class="allergy-list"></div>
+      <label class="toggle allergy-hide"><input type="checkbox" id="allergyHide" /> <span data-i18n="allergy_hide"></span></label>
+      <div class="dialog-actions">
+        <button type="button" id="allergyClear" class="pill-btn ghost" data-i18n="allergy_clear"></button>
+        <button type="button" id="allergySave" class="pill-btn primary" data-i18n="save"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="prayerDialog">
+    <form method="dialog">
+      <h2 data-i18n="prayer_h"></h2>
+      <div id="prayerTable" class="prayer-table"></div>
+      <div class="reminder-row">
+        <label><span data-i18n="prayer_method"></span>
+          <select id="prayerMethod">
+            <option value="3">Muslim World League</option>
+            <option value="13">Diyanet (Türkiye)</option>
+            <option value="12">UOIF (France)</option>
+            <option value="2">ISNA (North America)</option>
+            <option value="5">Egyptian General Authority</option>
+            <option value="4">Umm al-Qura (Makkah)</option>
+            <option value="15">Moonsighting Committee</option>
+          </select>
+        </label>
+        <label><span data-i18n="prayer_school"></span>
+          <select id="prayerSchool">
+            <option value="0" data-i18n="school_0"></option>
+            <option value="1" data-i18n="school_1"></option>
+          </select>
+        </label>
+      </div>
+      <p class="muted small" data-i18n="prayer_note"></p>
+      <div class="dialog-actions"><button class="pill-btn ghost" data-i18n="close"></button></div>
+    </form>
+  </dialog>
+
+  <dialog id="settingsDialog">
+    <form method="dialog">
+      <h2 data-i18n="settings_h"></h2>
+      <h3 data-i18n="canteen_h"></h3>
+      <p class="muted"><span data-i18n="canteen_current"></span> <b id="curCanteen"></b></p>
+      <input id="canteenSearch" type="search" data-i18n-ph="canteen_ph" style="width:100%" />
+      <div id="canteenResults" class="canteen-results"></div>
+      <h3 data-i18n="avoid_h"></h3>
+      <p class="muted" data-i18n-html="avoid_p_html"></p>
+      <input id="avoidInput" type="text" style="width:100%" />
+      <h3 data-i18n="share_h"></h3>
+      <p class="muted" id="shareHint"></p>
+      <div class="dialog-actions">
+        <button type="button" id="copyLink" class="pill-btn" hidden data-i18n="copy_link"></button>
+        <button type="button" id="saveSettings" class="pill-btn primary" data-i18n="save"></button>
+        <button class="pill-btn ghost" data-i18n="close"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <section id="printView" class="print-view" aria-hidden="true"></section>
+  <template id="qrTpl"><svg role="img" aria-label="QR code" version="1.1" viewBox="0 0 31 31" xmlns="http://www.w3.org/2000/svg"><path d="M1,1H2V2H1zM2,1H3V2H2zM3,1H4V2H3zM4,1H5V2H4zM5,1H6V2H5zM6,1H7V2H6zM7,1H8V2H7zM10,1H11V2H10zM13,1H14V2H13zM14,1H15V2H14zM15,1H16V2H15zM16,1H17V2H16zM17,1H18V2H17zM18,1H19V2H18zM19,1H20V2H19zM20,1H21V2H20zM23,1H24V2H23zM24,1H25V2H24zM25,1H26V2H25zM26,1H27V2H26zM27,1H28V2H27zM28,1H29V2H28zM29,1H30V2H29zM1,2H2V3H1zM7,2H8V3H7zM12,2H13V3H12zM14,2H15V3H14zM15,2H16V3H15zM16,2H17V3H16zM18,2H19V3H18zM19,2H20V3H19zM23,2H24V3H23zM29,2H30V3H29zM1,3H2V4H1zM3,3H4V4H3zM4,3H5V4H4zM5,3H6V4H5zM7,3H8V4H7zM10,3H11V4H10zM11,3H12V4H11zM12,3H13V4H12zM13,3H14V4H13zM15,3H16V4H15zM16,3H17V4H16zM18,3H19V4H18zM19,3H20V4H19zM21,3H22V4H21zM23,3H24V4H23zM25,3H26V4H25zM26,3H27V4H26zM27,3H28V4H27zM29,3H30V4H29zM1,4H2V5H1zM3,4H4V5H3zM4,4H5V5H4zM5,4H6V5H5zM7,4H8V5H7zM10,4H11V5H10zM12,4H13V5H12zM13,4H14V5H13zM14,4H15V5H14zM19,4H20V5H19zM23,4H24V5H23zM25,4H26V5H25zM26,4H27V5H26zM27,4H28V5H27zM29,4H30V5H29zM1,5H2V6H1zM3,5H4V6H3zM4,5H5V6H4zM5,5H6V6H5zM7,5H8V6H7zM11,5H12V6H11zM15,5H16V6H15zM16,5H17V6H16zM17,5H18V6H17zM19,5H20V6H19zM23,5H24V6H23zM25,5H26V6H25zM26,5H27V6H26zM27,5H28V6H27zM29,5H30V6H29zM1,6H2V7H1zM7,6H8V7H7zM9,6H10V7H9zM10,6H11V7H10zM11,6H12V7H11zM12,6H13V7H12zM16,6H17V7H16zM17,6H18V7H17zM20,6H21V7H20zM23,6H24V7H23zM29,6H30V7H29zM1,7H2V8H1zM2,7H3V8H2zM3,7H4V8H3zM4,7H5V8H4zM5,7H6V8H5zM6,7H7V8H6zM7,7H8V8H7zM9,7H10V8H9zM11,7H12V8H11zM13,7H14V8H13zM15,7H16V8H15zM17,7H18V8H17zM19,7H20V8H19zM21,7H22V8H21zM23,7H24V8H23zM24,7H25V8H24zM25,7H26V8H25zM26,7H27V8H26zM27,7H28V8H27zM28,7H29V8H28zM29,7H30V8H29zM10,8H11V9H10zM13,8H14V9H13zM14,8H15V9H14zM16,8H17V9H16zM17,8H18V9H17zM18,8H19V9H18zM19,8H20V9H19zM1,9H2V10H1zM4,9H5V10H4zM6,9H7V10H6zM7,9H8V10H7zM9,9H10V10H9zM10,9H11V10H10zM11,9H12V10H11zM12,9H13V10H12zM15,9H16V10H15zM16,9H17V10H16zM17,9H18V10H17zM20,9H21V10H20zM22,9H23V10H22zM24,9H25V10H24zM2,10H3V11H2zM4,10H5V11H4zM5,10H6V11H5zM11,10H12V11H11zM13,10H14V11H13zM14,10H15V11H14zM17,10H18V11H17zM18,10H19V11H18zM21,10H22V11H21zM22,10H23V11H22zM23,10H24V11H23zM26,10H27V11H26zM29,10H30V11H29zM1,11H2V12H1zM3,11H4V12H3zM4,11H5V12H4zM5,11H6V12H5zM6,11H7V12H6zM7,11H8V12H7zM8,11H9V12H8zM10,11H11V12H10zM11,11H12V12H11zM14,11H15V12H14zM15,11H16V12H15zM18,11H19V12H18zM19,11H20V12H19zM20,11H21V12H20zM21,11H22V12H21zM22,11H23V12H22zM23,11H24V12H23zM24,11H25V12H24zM25,11H26V12H25zM26,11H27V12H26zM27,11H28V12H27zM28,11H29V12H28zM1,12H2V13H1zM3,12H4V13H3zM5,12H6V13H5zM8,12H9V13H8zM9,12H10V13H9zM10,12H11V13H10zM11,12H12V13H11zM12,12H13V13H12zM14,12H15V13H14zM17,12H18V13H17zM19,12H20V13H19zM22,12H23V13H22zM27,12H28V13H27zM28,12H29V13H28zM4,13H5V14H4zM6,13H7V14H6zM7,13H8V14H7zM9,13H10V14H9zM12,13H13V14H12zM15,13H16V14H15zM16,13H17V14H16zM17,13H18V14H17zM18,13H19V14H18zM23,13H24V14H23zM26,13H27V14H26zM28,13H29V14H28zM29,13H30V14H29zM6,14H7V15H6zM9,14H10V15H9zM10,14H11V15H10zM13,14H14V15H13zM14,14H15V15H14zM15,14H16V15H15zM17,14H18V15H17zM20,14H21V15H20zM21,14H22V15H21zM22,14H23V15H22zM2,15H3V16H2zM3,15H4V16H3zM5,15H6V16H5zM7,15H8V16H7zM10,15H11V16H10zM12,15H13V16H12zM14,15H15V16H14zM15,15H16V16H15zM17,15H18V16H17zM18,15H19V16H18zM19,15H20V16H19zM21,15H22V16H21zM22,15H23V16H22zM24,15H25V16H24zM25,15H26V16H25zM26,15H27V16H26zM27,15H28V16H27zM28,15H29V16H28zM29,15H30V16H29zM2,16H3V17H2zM3,16H4V17H3zM4,16H5V17H4zM8,16H9V17H8zM9,16H10V17H9zM10,16H11V17H10zM11,16H12V17H11zM13,16H14V17H13zM18,16H19V17H18zM20,16H21V17H20zM21,16H22V17H21zM25,16H26V17H25zM26,16H27V17H26zM28,16H29V17H28zM1,17H2V18H1zM2,17H3V18H2zM3,17H4V18H3zM6,17H7V18H6zM7,17H8V18H7zM8,17H9V18H8zM10,17H11V18H10zM14,17H15V18H14zM18,17H19V18H18zM19,17H20V18H19zM21,17H22V18H21zM22,17H23V18H22zM28,17H29V18H28zM2,18H3V19H2zM4,18H5V19H4zM5,18H6V19H5zM14,18H15V19H14zM15,18H16V19H15zM17,18H18V19H17zM18,18H19V19H18zM21,18H22V19H21zM22,18H23V19H22zM23,18H24V19H23zM24,18H25V19H24zM26,18H27V19H26zM29,18H30V19H29zM1,19H2V20H1zM3,19H4V20H3zM5,19H6V20H5zM6,19H7V20H6zM7,19H8V20H7zM9,19H10V20H9zM10,19H11V20H10zM12,19H13V20H12zM15,19H16V20H15zM18,19H19V20H18zM22,19H23V20H22zM24,19H25V20H24zM25,19H26V20H25zM28,19H29V20H28zM29,19H30V20H29zM9,20H10V21H9zM12,20H13V21H12zM13,20H14V21H13zM15,20H16V21H15zM16,20H17V21H16zM18,20H19V21H18zM21,20H22V21H21zM23,20H24V21H23zM24,20H25V21H24zM28,20H29V21H28zM29,20H30V21H29zM1,21H2V22H1zM4,21H5V22H4zM6,21H7V22H6zM7,21H8V22H7zM9,21H10V22H9zM21,21H22V22H21zM22,21H23V22H22zM23,21H24V22H23zM24,21H25V22H24zM25,21H26V22H25zM27,21H28V22H27zM9,22H10V23H9zM11,22H12V23H11zM13,22H14V23H13zM15,22H16V23H15zM17,22H18V23H17zM18,22H19V23H18zM21,22H22V23H21zM25,22H26V23H25zM27,22H28V23H27zM28,22H29V23H28zM29,22H30V23H29zM1,23H2V24H1zM2,23H3V24H2zM3,23H4V24H3zM4,23H5V24H4zM5,23H6V24H5zM6,23H7V24H6zM7,23H8V24H7zM11,23H12V24H11zM13,23H14V24H13zM18,23H19V24H18zM21,23H22V24H21zM23,23H24V24H23zM25,23H26V24H25zM28,23H29V24H28zM1,24H2V25H1zM7,24H8V25H7zM9,24H10V25H9zM15,24H16V25H15zM16,24H17V25H16zM19,24H20V25H19zM21,24H22V25H21zM25,24H26V25H25zM26,24H27V25H26zM27,24H28V25H27zM1,25H2V26H1zM3,25H4V26H3zM4,25H5V26H4zM5,25H6V26H5zM7,25H8V26H7zM10,25H11V26H10zM11,25H12V26H11zM12,25H13V26H12zM16,25H17V26H16zM17,25H18V26H17zM18,25H19V26H18zM21,25H22V26H21zM22,25H23V26H22zM23,25H24V26H23zM24,25H25V26H24zM25,25H26V26H25zM28,25H29V26H28zM29,25H30V26H29zM1,26H2V27H1zM3,26H4V27H3zM4,26H5V27H4zM5,26H6V27H5zM7,26H8V27H7zM9,26H10V27H9zM10,26H11V27H10zM12,26H13V27H12zM21,26H22V27H21zM23,26H24V27H23zM24,26H25V27H24zM25,26H26V27H25zM26,26H27V27H26zM27,26H28V27H27zM28,26H29V27H28zM1,27H2V28H1zM3,27H4V28H3zM4,27H5V28H4zM5,27H6V28H5zM7,27H8V28H7zM10,27H11V28H10zM12,27H13V28H12zM13,27H14V28H13zM17,27H18V28H17zM18,27H19V28H18zM19,27H20V28H19zM20,27H21V28H20zM21,27H22V28H21zM25,27H26V28H25zM26,27H27V28H26zM27,27H28V28H27zM29,27H30V28H29zM1,28H2V29H1zM7,28H8V29H7zM10,28H11V29H10zM14,28H15V29H14zM16,28H17V29H16zM17,28H18V29H17zM18,28H19V29H18zM19,28H20V29H19zM20,28H21V29H20zM21,28H22V29H21zM24,28H25V29H24zM28,28H29V29H28zM1,29H2V30H1zM2,29H3V30H2zM3,29H4V30H3zM4,29H5V30H4zM5,29H6V30H5zM6,29H7V30H6zM7,29H8V30H7zM9,29H10V30H9zM13,29H14V30H13zM14,29H15V30H14zM17,29H18V30H17zM18,29H19V30H18zM21,29H22V30H21zM22,29H23V30H22zM26,29H27V30H26zM28,29H29V30H28z" id="qr-path" fill="#000000" fill-opacity="1" fill-rule="nonzero" stroke="none"/></svg></template>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script>
+(function (global) {
+  "use strict";
+  const P = {"regex": {"PORK": "schwein|speck|schinken|salami|\\bbacon|\\bham\\b|\\bpork|prosciutto|pancetta|guanciale|chorizo|debreziner|wei(?:ß|ss)wurst|leberk(?:ä|ae|a)s|kass(?:e)?ler|krainer|mortadella|kabanos|cabanossi|stelze|ripperl|spare\\s?ribs|schmalz|grammel|\\blard|porchetta|serrano(?!\\s*chil)", "PORK_DISH": "carbonara|cordon\\s?bleu|toast\\s?hawaii|frankfurter(?!\\s*gr)|hot\\s?dog", "SAUSAGE": "\\w*(?:w(?:u|ü|ue)rst|sausage)\\w*", "SAUSAGE_SAFE": "rind|beef|gefl(?:ü|ue)gel|poultry|h(?:ü|ue)hner|huhn|chicken|pute|turkey|lamm|lamb|vegan|veggie|vegetar|tofu|soja|soy|plant", "GELATINE": "gelatine|gelatin", "ALCOHOL": "(?<!sch)wein(?!traube|beere|essig|bl(?:ä|ae)tt|stein)|\\bwine\\b(?!\\s*vinegar)|bier(?!garten)|\\bbeer\\b|\\brum\\b|rumtopf|rumrosine|lik(?:ö|oe)r|liqueur|\\bsekt\\b|champagne|prosecco|cognac|brandy|weinbrand|whisk(?:e)?y|wodka|vodka|schnaps|grappa|marsala|sherry|portwein|calvados|amaretto|grand\\s?marnier|cointreau|baileys|riesling|veltliner|chardonnay|merlot|zweigelt|flambiert|flamb(?:é|e)|beschwipst|radler|\\bgin\\b|\\bau\\s+vin\\b|\\bvin\\s+(?:rouge|blanc)\\b", "ALCOHOL_MAYBE": "tiramisu|\\bmirin\\b|\\bsake\\b", "ALCOHOL_HINT": "teriyaki", "GENERIC_MEAT": "fleisch(?!tomate)|\\bmeat(?:ball)?|geschnetzelt|gyros|keba[bp]|d(?:ö|oe|o)ner|burger|frikadelle|fleischlaib|fleischlaberl|faschiert|hackfleisch|\\bhack\\b|minced|\\bleber|\\bliver|nieren|beuschel|kutteln|ćevap|cevap|con\\s?carne|nugget|wings", "OFTEN_PORK": "schnitzel|kotelett|faschiert|fleischlaib|fleischlaberl|\\bbraten|bolognese|ragout|rag(?:ù|u)\\b|gulasch|goulash|lasagne|cevap|ćevap|burger|geschnetzelt|\\bmeat|fleisch(?!tomate)", "BROTH": "rind(?:s)?suppe|rinderbr(?:ü|ue)he|fleischbr(?:ü|ue)he|h(?:ü|ue)hnerbr(?:ü|ue)he|kraftbr(?:ü|ue)he|bouillon|\\bfond\\b|kalbsfond|\\bjus\\b|\\w+jus\\b|bratensaft|bratensauce|demi.?glace|\\bbroth\\b|\\bstock\\b|\\bgravy\\b", "BEEF_BROTH_SOUP": "frittaten|leberkn(?:ö|oe)del|gr(?:ie|ei)(?:ß|ss)nockerl|backerbsen|klare\\s+suppe|consomm(?:é|e)|nudelsuppe|markkn(?:ö|oe)del", "FISH": "fisch|\\bfish|lachs|salmon|barsch|hecht|thunfisch|\\btuna|forelle|trout|kabeljau|\\bcod\\b|dorsch|zander|saibling|karpfen|scholle|seelachs|pangasius|sardine|sardelle|anchov|makrele|mackerel|hering|matjes|tilapia|dorade|branzino|heilbutt|halibut|seeteufel|\\bhake\\b|\\bpike\\b|\\bperch\\b|\\bbass\\b", "SEAFOOD": "garnele|shrimp|prawn|scampi|krabbe|\\bcrab|calamar|tintenfisch|squid|oktopus|octop|muschel|mussel|\\bclam|hummer|lobster|languste|meeresfr(?:ü|ue)chte|seafood|frutti\\s+di\\s+mare|scallop|auster|oyster", "VEG_NAME": "vegan|vegetar|veggie|plant.?based|pflanzlich|planet\\s?!?\\s?based", "RENNET_CHEESE": "parmesan|parmigiano|grana\\s+padano|pecorino|gorgonzola", "HALAL_WORD": "\\bhalal\\b"}, "animals": [["chicken", "huhn|h(?:ü|ue)hn(?!erei)|hendl|henderl|h(?:ä|ae)hnchen|poulet|poulard|chicken|\\bgai\\b|\\bcoq\\b"], ["poultry", "gefl(?:ü|ue)gel|poultry"], ["turkey", "\\bpute|puten|truthahn|turkey"], ["duck/goose", "\\bente\\b|\\benten|\\bduck|\\bgans\\b|g(?:ä|ae)nse|goose"], ["beef/veal", "\\brind|\\bbeef|kalb|\\bveal|steak|tafelspitz|ochsen|beiried|rostbraten"], ["lamb", "lamm|\\blamb(?!'?s\\s+lettuce)|\\bschaf(?!s?k(?:ä|ae)se|milch|joghurt)|mutton|hammel|\\bziege(?!nk(?:ä|ae)se|nfrisch|nmilch)|\\bgoat(?!'?s?\\s+(?:cheese|milk))|\\bkitz\\b"], ["game", "\\bwild(?!\\s*(?:lachs|kr(?:ä|ae)uter|reis|kraut|spargel|obst|beere|fang|garnele|salmon|rice|garlic|herb|berr|mushroom|pilz|caught|catch|fisch|fish))|hirsch|\\breh(?:e|rücken|ragout|keule)?\\b|venison|\\bhasen?\\b|kaninchen|rabbit|gams"]], "animalsDe": {"chicken": "Huhn", "poultry": "Geflügel", "turkey": "Pute", "duck/goose": "Ente/Gans", "beef/veal": "Rind/Kalb", "lamb": "Lamm", "game": "Wild"}, "tags": {"pork": [10278, 10312], "beef": [10282], "fish": [10313], "vegetarian": [10249, 10279], "vegan": [10280, 10314]}, "seafoodAllergens": [1, 13], "verdicts": {"haram": {"label": "Not halal", "label_de": "Nicht halal", "emoji": "❌", "color": "red"}, "doubtful": {"label": "Doubtful", "label_de": "Fraglich", "emoji": "⚠️", "color": "orange"}, "halal": {"label": "Halal-friendly", "label_de": "Halal-freundlich", "emoji": "✅", "color": "green"}, "unknown": {"label": "Unknown", "label_de": "Unbekannt", "emoji": "❔", "color": "grey"}}, "msg": {"certified": {"en": "Marked as halal by the canteen", "de": "Von der Kantine als halal gekennzeichnet"}, "pork_tag": {"en": "Canteen label: contains pork", "de": "Kantinen-Kennzeichnung: enthält Schweinefleisch"}, "pork_name_veg": {"en": "The name mentions “{words}”, but the dish is labelled vegetarian – please double-check", "de": "Der Name enthält „{words}“, das Gericht ist aber als vegetarisch gekennzeichnet – bitte nachfragen"}, "pork_kw": {"en": "Pork ingredient in the name: {words}", "de": "Schweinefleisch-Zutat im Namen: {words}"}, "pork_dish_veg": {"en": "“{words}” is classically made with pork – here labelled vegetarian", "de": "„{words}“ wird klassisch mit Schwein zubereitet – hier als vegetarisch gekennzeichnet"}, "sausage": {"en": "Sausage ({words}) – in Austria usually made from pork", "de": "Wurst ({words}) – in Österreich meist aus Schweinefleisch"}, "pork_dish": {"en": "“{words}” is classically made with pork or ham", "de": "„{words}“ wird klassisch mit Schwein oder Schinken zubereitet"}, "gelatine": {"en": "Contains gelatine – usually made from pork", "de": "Enthält Gelatine – meist vom Schwein"}, "alcohol_kw": {"en": "Alcohol in the name: {words}", "de": "Alkohol im Namen: {words}"}, "alcohol_maybe": {"en": "“{word}” is often made with alcohol", "de": "„{word}“ wird oft mit Alkohol zubereitet"}, "teriyaki": {"en": "Teriyaki sauce often contains mirin or sake (rice wine)", "de": "Teriyaki-Sauce enthält oft Mirin oder Sake (Reiswein)"}, "alcohol_high": {"en": "Recipe data: {alc} g alcohol per 100 g – probably cooked with wine or spirits", "de": "Rezeptdaten: {alc} g Alkohol pro 100 g – wahrscheinlich mit Wein oder Spirituosen gekocht"}, "alcohol_mid": {"en": "Recipe data: {alc} g alcohol per 100 g – may contain wine", "de": "Rezeptdaten: {alc} g Alkohol pro 100 g – kann Wein enthalten"}, "alcohol_trace": {"en": "Traces of alcohol ({alc} g per 100 g) – usually from vinegar or soy sauce", "de": "Spuren von Alkohol ({alc} g pro 100 g) – meist aus Essig oder Sojasauce"}, "meat_name_veg": {"en": "The name mentions {animals}, but the dish is labelled vegetarian", "de": "Der Name nennt {animals_de}, das Gericht ist aber als vegetarisch gekennzeichnet"}, "meat": {"en": "Contains {animals} – halal slaughter not stated", "de": "Enthält {animals_de} – Halal-Schlachtung nicht angegeben"}, "meat_unknown": {"en": "Meat dish (“{word}”) without the type of meat – could be pork", "de": "Fleischgericht („{word}“) ohne Angabe der Fleischsorte – könnte Schwein sein"}, "broth": {"en": "“{word}” – meat stock may not be halal", "de": "„{word}“ – Fleischbrühe ist möglicherweise nicht halal"}, "broth_soup": {"en": "Clear soups in Austria are traditionally made with beef broth", "de": "Klare Suppen werden in Österreich traditionell mit Rindsuppe gekocht"}, "fish": {"en": "Fish – halal according to scholarly consensus", "de": "Fisch – nach Konsens der Gelehrten halal"}, "seafood": {"en": "Seafood – accepted by most schools of thought; Hanafi opinions differ", "de": "Meeresfrüchte – von den meisten Rechtsschulen akzeptiert; hanafitische Meinungen weichen ab"}, "vegan_tag": {"en": "Vegan (canteen label)", "de": "Vegan (Kantinen-Kennzeichnung)"}, "vegan_name": {"en": "Vegan / plant-based", "de": "Vegan / pflanzlich"}, "veg_tag": {"en": "Vegetarian (canteen label)", "de": "Vegetarisch (Kantinen-Kennzeichnung)"}, "veg_name": {"en": "Vegetarian / plant-based", "de": "Vegetarisch / pflanzlich"}, "rennet": {"en": "{cheese} is traditionally made with animal rennet", "de": "{cheese} wird traditionell mit tierischem Lab hergestellt"}, "personal": {"en": "On your personal avoid list: “{word}”", "de": "Auf deiner persönlichen Liste: „{word}“"}}, "asks": {"pork": {"de": "Ist in {dish} Schweinefleisch oder Speck enthalten?", "en": "Does {dish} contain pork or bacon?"}, "gelatine": {"de": "Welche Gelatine wird für {dish} verwendet – vom Schwein, vom Rind oder pflanzlich?", "en": "Which gelatine is used for {dish} – pork, beef or plant-based?"}, "alcohol": {"de": "Wird bei {dish} Alkohol verwendet?", "en": "Is alcohol used in {dish}?"}, "wine": {"de": "Wird bei {dish} Wein oder Alkohol verwendet, zum Beispiel in der Sauce?", "en": "Is wine or alcohol used in {dish}, for example in the sauce?"}, "slaughter": {"de": "Ist das Fleisch in {dish} halal geschlachtet?", "en": "Is the meat in {dish} halal-slaughtered?"}, "which_meat": {"de": "Welches Fleisch wird für {dish} verwendet – ist Schweinefleisch dabei?", "en": "Which meat is used for {dish} – does it contain pork?"}, "stock": {"de": "Wird für {dish} Fleischbrühe, Fond oder Bratensaft verwendet?", "en": "Is meat broth, stock or gravy used for {dish}?"}, "beef_soup": {"de": "Wird die Suppe {dish} mit Rindsuppe gekocht?", "en": "Is the soup {dish} made with beef broth?"}, "rennet": {"de": "Wird für {dish} Käse mit tierischem Lab verwendet?", "en": "Is cheese made with animal rennet used for {dish}?"}}};
+  const HARAM = "haram", DOUBTFUL = "doubtful", CAUTION = "caution", OK = "ok";
+  const RANK = { haram: 3, doubtful: 2, caution: 1, ok: 0 };
+  const MODES = ["standard", "strict", "relaxed"];
+  const W = "[\\p{L}\\p{N}_]";
+  const BOUNDARY = `(?:(?<=${W})(?!${W})|(?<!${W})(?=${W}))`;
+  function pyRx(src, isGlobal) {
+    const js = src.replace(/\\b/g, BOUNDARY).replace(/\\w/g, W);
+    return new RegExp(js, isGlobal ? "giu" : "iu");
+  }
+  const rx = {}, rxg = {};
+  for (const [k, v] of Object.entries(P.regex)) { rx[k] = pyRx(v); rxg[k] = pyRx(v, true); }
+  const ANIMALS = P.animals.map(([name, src]) => [name, pyRx(src)]);
+  const TAG = Object.fromEntries(Object.entries(P.tags).map(([k, v]) => [k, new Set(v)]));
+  const search = (name, s) => rx[name].exec(s);
+  const findAll = (name, s) => [...s.matchAll(rxg[name])];
+  const lowerSet = (ms) => [...new Set(ms.map((m) => m[0].toLowerCase()))].sort();
+  const title = (s) => s.replace(/\p{L}+/gu, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase());
+  const escRx = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const intersects = (set, arr) => arr.some((x) => set.has(x));
+  const fill = (tpl, params) => tpl.replace(/\{(\w+)\}/g, (m, k) => (k in params ? params[k] : m));
+  const short = (name) => name.split("/")[0].replace(/["“”„]/g, "").trim() || name;
+  function thresholds(mode) {
+    return mode === "strict" ? [0.15, 0.05, 0.02] : [0.5, 0.15, 0.05];
+  }
+  function verdictOf(findings) {
+    const worst = findings.reduce((m, f) => Math.max(m, RANK[f.severity]), -1);
+    return worst === 3 ? "haram" : worst === 2 ? "doubtful" : findings.some((f) => f.severity === OK) ? "halal" : "unknown";
+  }
+  function analyse(nameDe, nameEn = "", tags = [], allergens = [], alcoholPer100 = 0, category = "",
+                   mode = "standard", avoidKeywords = []) {
+    if (!MODES.includes(mode)) mode = "standard";
+    nameDe = nameDe || ""; nameEn = nameEn || ""; tags = tags || []; allergens = allergens || [];
+    const text = `${nameDe} | ${nameEn}`;
+    const dishDe = short(nameDe || nameEn), dishEn = short(nameEn || nameDe);
+    const findings = [];
+    const tagIds = tags.map((t) => t.Id);
+    const tagNames = tags.map((t) => (t.Name || "") + " " + (t.Label || "")).join(" ").toLowerCase();
+    const isVegan = intersects(TAG.vegan, tagIds) || tagNames.includes("vegan");
+    const isVeg = isVegan || intersects(TAG.vegetarian, tagIds) || tagNames.includes("vegetar") || !!search("VEG_NAME", text);
+    const certified = !!search("HALAL_WORD", text) || tagNames.includes("halal");
+    const add = (severity, code, key, ask = null, params = {}) => {
+      if (mode === "strict" && severity === CAUTION) severity = DOUBTFUL;
+      const q = ask ? P.asks[ask] : null;
+      findings.push({
+        severity, code, text: fill(P.msg[key].en, params), text_de: fill(P.msg[key].de, params),
+        ask: q ? q.de.replace("{dish}", `„${dishDe}“`) : null,
+        ask_en: q ? q.en.replace("{dish}", `“${dishEn}”`) : null,
+      });
+    };
+    if (certified) add(OK, "certified", "certified");
+    const porkTag = intersects(TAG.pork, tagIds) || tagNames.includes("schwein");
+    const porkKw = lowerSet(findAll("PORK", text));
+    const porkDish = lowerSet(findAll("PORK_DISH", text));
+    const unsafeSausages = (s) => new Set(findAll("SAUSAGE", s)
+      .filter((m) => !search("SAUSAGE_SAFE", s.slice(Math.max(0, m.index - 15), m.index + m[0].length)))
+      .map((m) => m[0].toLowerCase()));
+    let sausages = unsafeSausages(nameDe);
+    if (nameEn && search("SAUSAGE", nameEn) && unsafeSausages(nameEn).size === 0) sausages = new Set();
+    if (sausages.size || !nameDe) for (const s of unsafeSausages(nameEn)) sausages.add(s);
+    sausages = [...sausages].sort();
+    if (porkTag) add(HARAM, "pork", "pork_tag");
+    else if (porkKw.length) {
+      const words = porkKw.join(", ");
+      if (isVeg) add(DOUBTFUL, "pork-name", "pork_name_veg", "pork", { words });
+      else add(HARAM, "pork", "pork_kw", null, { words });
+    } else if (porkDish.length || sausages.length) {
+      const words = porkDish.concat(sausages).join(", ");
+      if (isVeg) add(CAUTION, "pork-name", "pork_dish_veg", null, { words });
+      else if (sausages.length && !porkDish.length) add(HARAM, "pork", "sausage", null, { words });
+      else add(HARAM, "pork", "pork_dish", null, { words });
+    }
+    if (search("GELATINE", text) && !/rind|beef|halal|agar|vegan/iu.test(text))
+      add(isVeg ? DOUBTFUL : HARAM, "gelatine", "gelatine", "gelatine");
+    const alcKw = lowerSet(findAll("ALCOHOL", text));
+    if (alcKw.length) add(HARAM, "alcohol", "alcohol_kw", null, { words: alcKw.join(", ") });
+    const maybe = search("ALCOHOL_MAYBE", text);
+    if (maybe) add(DOUBTFUL, "alcohol-maybe", "alcohol_maybe", "alcohol", { word: maybe[0] });
+    if (search("ALCOHOL_HINT", text)) add(CAUTION, "alcohol-hint", "teriyaki");
+    const alc = Number(alcoholPer100) || 0;
+    const [h, d, c] = thresholds(mode);
+    if (alc >= h) add(HARAM, "alcohol-data", "alcohol_high", "wine", { alc: alc.toFixed(2) });
+    else if (alc >= d) add(DOUBTFUL, "alcohol-data", "alcohol_mid", "wine", { alc: alc.toFixed(2) });
+    else if (alc >= c) add(CAUTION, "alcohol-trace", "alcohol_trace", null, { alc: alc.toFixed(2) });
+    const animals = ANIMALS.filter(([, r]) => r.test(text)).map(([n]) => n);
+    if ((intersects(TAG.beef, tagIds) || tagNames.includes("rind")) && !animals.includes("beef/veal")) animals.push("beef/veal");
+    const animalParams = { animals: animals.join(", "), animals_de: animals.map((a) => P.animalsDe[a]).join(", ") };
+    const generic = !!search("GENERIC_MEAT", text);
+    const meatSev = mode === "relaxed" ? CAUTION : DOUBTFUL;
+    const fishName = !!search("FISH", text);
+    if (certified) {  }
+    else if (isVeg) {
+      if (animals.length) add(CAUTION, "meat-name", "meat_name_veg", null, animalParams);
+    } else if (animals.length) {
+      add(meatSev, "meat", "meat", "slaughter", animalParams);
+    } else if (generic || (search("OFTEN_PORK", text) && !porkTag && !porkKw.length && !porkDish.length)) {
+      if (!porkTag && !porkKw.length && !porkDish.length && !fishName && !intersects(TAG.fish, tagIds)) {
+        const m = (search("OFTEN_PORK", text) || search("GENERIC_MEAT", text))[0];
+        add(DOUBTFUL, "meat-unknown", "meat_unknown", "which_meat", { word: m });
+      }
+    }
+    if (!isVeg && !porkTag) {
+      const b = search("BROTH", text);
+      if (b) add(!animals.length && !fishName ? DOUBTFUL : CAUTION, "broth", "broth", "stock", { word: b[0] });
+      else if ((category || "").toLowerCase().includes("supp") && search("BEEF_BROTH_SOUP", text))
+        add(DOUBTFUL, "broth", "broth_soup", "beef_soup");
+    }
+    if (fishName || intersects(TAG.fish, tagIds)) add(OK, "fish", "fish");
+    if (search("SEAFOOD", text) || allergens.some((a) => P.seafoodAllergens.includes(a)))
+      add(mode === "strict" ? DOUBTFUL : OK, "seafood", "seafood");
+    if (isVegan) add(OK, "vegan", intersects(TAG.vegan, tagIds) ? "vegan_tag" : "vegan_name");
+    else if (isVeg) add(OK, "vegetarian", intersects(TAG.vegetarian, tagIds) ? "veg_tag" : "veg_name");
+    const cheese = search("RENNET_CHEESE", text);
+    if (!isVegan && cheese) add(CAUTION, "rennet", "rennet", "rennet", { cheese: title(cheese[0]) });
+    for (const kw of avoidKeywords || []) {
+      if (kw && new RegExp(escRx(kw), "iu").test(text)) add(HARAM, "personal", "personal", null, { word: kw });
+    }
+    findings.sort((a, b) => RANK[b.severity] - RANK[a.severity]);
+    const verdict = verdictOf(findings);
+    const v = P.verdicts[verdict];
+    return { verdict, label: v.label, label_de: v.label_de, emoji: v.emoji, color: v.color, findings, animals };
+  }
+  global.HalalRules = { analyse, verdictOf, MODES, RANK, VERDICTS: P.verdicts };
+})(window);
+</script>
+<script>
+(function (global) {
+  "use strict";
+  const QNIPS_API = "https://apps-live-eu.qnips.com/cons/api";
+  const QNIPS_HEADERS = { "App-Brand": "dussmann", "Response-Version": "v3", Authorization: "00781f121c079584d46729b2fa5459fb58" };
+  const FIREBASE_KEY = "AIzaSyBAtCQoHK_j6EkqxOEttRQzQcJF3pHSMMA";
+  const FIRESTORE = "https://firestore.googleapis.com/v1/projects/firebase-dussmann/databases/(default)/documents";
+  const WEBSITE_URL = "https://halal-menu-villach.github.io/";
+  const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const DEFAULT_MENU = { id: 18027, store: "INFINEON VILLACH", menu: "INFINEON", city: "Villach", lat: 46.5950306, lng: 13.8556604 };
+  const LS = "hm-share-";
+  const resolved = {};
+  const settings = {
+    get menu() {
+      const q = new URLSearchParams(location.search);
+      if (q.get("menu")) {
+        const id = Number(q.get("menu"));
+        return { id, store: q.get("store") || resolved[id]?.store || "", menu: q.get("name") || resolved[id]?.menu || "" };
+      }
+      try { return JSON.parse(localStorage.getItem(LS + "menu")) || DEFAULT_MENU; } catch { return DEFAULT_MENU; }
+    },
+    set menu(m) {
+      localStorage.setItem(LS + "menu", JSON.stringify(m));
+      const q = new URLSearchParams(location.search);
+      if (q.has("menu")) { ["menu", "store", "name"].forEach((k) => q.delete(k)); history.replaceState(null, "", "?" + q); }
+    },
+    get avoid() { try { return JSON.parse(localStorage.getItem(LS + "avoid")) || []; } catch { return []; } },
+    set avoid(list) { localStorage.setItem(LS + "avoid", JSON.stringify(list)); },
+  };
+  const portalUrl = (m) => `https://dussmann.cateringportal.io/menu/${encodeURIComponent(m.store)}/${encodeURIComponent(m.menu)}`;
+  const pad = (n) => String(n).padStart(2, "0");
+  const isoDate = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const parseDate = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d, 12); };
+  const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  const weekdayIdx = (d) => (d.getDay() + 6) % 7;
+  function isoWeek(d) {
+    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    t.setUTCDate(t.getUTCDate() + 3 - ((t.getUTCDay() + 6) % 7));
+    const year = t.getUTCFullYear();
+    const week = 1 + Math.floor((t - Date.UTC(year, 0, 1)) / 86400000 / 7);
+    return [year, week];
+  }
+  let token = null, tokenExp = 0, env = "Release", authPromise = null;
+  const cache = new Map();
+  async function getJson(url, opts = {}) {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 15000);
+    try {
+      const r = await fetch(url, { ...opts, signal: ctl.signal });
+      if (r.status === 404) return null;
+      if (!r.ok) { const e = new Error(`HTTP ${r.status}`); e.status = r.status; throw e; }
+      return await r.json();
+    } finally { clearTimeout(timer); }
+  }
+  async function auth(force = false) {
+    if (!force && token && Date.now() < tokenExp - 120000) return token;
+    if (authPromise) return authPromise;
+    authPromise = (async () => {
+      const info = await getJson(`${QNIPS_API}/FirebaseInfo`, { headers: QNIPS_HEADERS });
+      env = info.Environment || "Release";
+      const res = await getJson(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${FIREBASE_KEY}`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: info.CustomToken, returnSecureToken: true }),
+      });
+      token = res.idToken; tokenExp = Date.now() + Number(res.expiresIn || 3600) * 1000;
+      return token;
+    })();
+    try { return await authPromise; } finally { authPromise = null; }
+  }
+  const SAVED = "hm-cache:", SAVED_INDEX = "hm-cache-index", SAVED_MAX = 14;
+  function persist(path, data) {
+    if (path.includes("StoreMetas")) return;
+    const save = () => {
+      localStorage.setItem(SAVED + path, JSON.stringify({ t: Date.now(), data }));
+      const idx = JSON.parse(localStorage.getItem(SAVED_INDEX) || "[]").filter((p) => p !== path);
+      idx.push(path);
+      while (idx.length > SAVED_MAX) localStorage.removeItem(SAVED + idx.shift());
+      localStorage.setItem(SAVED_INDEX, JSON.stringify(idx));
+    };
+    try { save(); } catch {
+      try {
+        for (const p of JSON.parse(localStorage.getItem(SAVED_INDEX) || "[]")) localStorage.removeItem(SAVED + p);
+        localStorage.removeItem(SAVED_INDEX);
+        save();
+      } catch {  }
+    }
+  }
+  function savedCopy(path) { try { return JSON.parse(localStorage.getItem(SAVED + path)); } catch { return null; } }
+  async function fsFetch(path) {
+    const url = () => `${FIRESTORE}/${env}/${path}`;
+    try { return await getJson(url(), { headers: { Authorization: "Bearer " + (await auth()) } }); }
+    catch (e) {
+      if (e.status !== 401 && e.status !== 403) throw e;
+      return getJson(url(), { headers: { Authorization: "Bearer " + (await auth(true)) } });
+    }
+  }
+  async function fsGet(path, ctx) {
+    const hit = cache.get(path);
+    if (hit && Date.now() - hit.t < 600000) return hit.data;
+    try {
+      const data = await fsFetch(path);
+      cache.set(path, { t: Date.now(), data });
+      if (data) persist(path, data);
+      return data;
+    } catch (e) {
+      const s = savedCopy(path);
+      if (!s) throw e;
+      if (ctx) ctx.savedAt = Math.min(ctx.savedAt || Infinity, s.t);
+      return s.data;
+    }
+  }
+  let confirmedPromise = null;
+  function loadConfirmed() {
+    if (!/^https?:$/.test(location.protocol)) return Promise.resolve([]);
+    if (!confirmedPromise) {
+      confirmedPromise = fetch("confirmed.json", { cache: "no-cache" })
+        .then((r) => (r.ok ? r.json() : {}))
+        .then((d) => (d.confirmed || []).filter((e) => e && String(e.match || "").trim()))
+        .catch(() => []);
+    }
+    return confirmedPromise;
+  }
+  function applyConfirmed(item, entries, day) {
+    for (const e of entries) {
+      if (e.date && e.date !== day) continue;
+      if (e.until && day > e.until) continue;
+      if (!`${item.name_de} | ${item.name_en}`.toLowerCase().includes(String(e.match).trim().toLowerCase())) continue;
+      const noteEn = e.note_en || e.note || "", noteDe = e.note_de || e.note || noteEn;
+      const halal = ["halal", "ok", "yes"].includes(String(e.result || "halal").trim().toLowerCase());
+      let findings;
+      if (halal) {
+        const kitchen = { severity: "ok", code: "kitchen", text: "Confirmed by the kitchen" + (noteEn ? `: ${noteEn}` : ""),
+                          text_de: "Von der Küche bestätigt" + (noteDe ? `: ${noteDe}` : ""), ask: null, ask_en: null };
+        findings = [kitchen, ...item.findings.filter((f) => f.severity === "ok" || (f.severity === "haram" && ["pork", "personal"].includes(f.code)))];
+      } else {
+        const kitchen = { severity: "haram", code: "kitchen", text: "Not halal according to the kitchen" + (noteEn ? `: ${noteEn}` : ""),
+                          text_de: "Laut Küche nicht halal" + (noteDe ? `: ${noteDe}` : ""), ask: null, ask_en: null };
+        findings = [kitchen, ...item.findings];
+      }
+      findings.sort((a, b) => HalalRules.RANK[b.severity] - HalalRules.RANK[a.severity]);
+      const verdict = HalalRules.verdictOf(findings), v = HalalRules.VERDICTS[verdict];
+      Object.assign(item, { findings, verdict, confirmed: halal ? "halal" : "not-halal", label: v.label, label_de: v.label_de, emoji: v.emoji, color: v.color });
+      break;
+    }
+    return item;
+  }
+  function conv(v) {
+    if ("mapValue" in v) return Object.fromEntries(Object.entries(v.mapValue.fields || {}).map(([k, x]) => [k, conv(x)]));
+    if ("arrayValue" in v) return (v.arrayValue.values || []).map(conv);
+    if ("integerValue" in v) return Number(v.integerValue);
+    for (const k of ["stringValue", "booleanValue", "doubleValue", "timestampValue", "referenceValue"]) if (k in v) return v[k];
+    return null;
+  }
+  const doc = (d) => (d ? Object.fromEntries(Object.entries(d.fields || {}).map(([k, x]) => [k, conv(x)])) : null);
+  const capitalize = (s) => (s ? s[0].toUpperCase() + s.slice(1).toLowerCase() : s);
+  const clean = (s) => (s || "").split(/\s+/).filter(Boolean).join(" ");
+  const isSoup = (c) => /supp|soup/i.test(c);
+  function stats(items) {
+    const seen = new Map();
+    for (const i of items) { const k = i.name_de.toLowerCase(); if (!seen.has(k)) seen.set(k, i.verdict); }
+    const s = { halal: 0, doubtful: 0, haram: 0, unknown: 0 };
+    for (const v of seen.values()) s[v]++;
+    s.total = seen.size;
+    s.halal_pct = s.total ? Math.round((100 * s.halal) / s.total) : 0;
+    return s;
+  }
+  function bestPick(items) {
+    const ok = items.filter((i) => i.verdict === "halal" && !i.sold_out && !i.night);
+    if (!ok.length) return null;
+    let pool = ok.filter((i) => !isSoup(i.category));
+    if (!pool.length) pool = ok;
+    const clear = pool.filter((i) => !i.findings.some((f) => f.severity === "caution"));
+    if (clear.length) pool = clear;
+    const best = pool.reduce((a, b) => ((b.protein || 0) > (a.protein || 0) ? b : a));
+    const reason = best.protein ? `Most protein (${Math.round(best.protein)} g)` : "Halal-friendly main dish";
+    return { id: best.id, reason: reason + " among halal-friendly main dishes", protein: best.protein ? Math.round(best.protein) : null };
+  }
+  async function weekReport(date, mode, { withEnglish = true } = {}) {
+    const m = settings.menu;
+    const [year, week] = isoWeek(date);
+    const base = `Menus/${m.id}`;
+    const ctx = {};
+    const [deRaw, enRaw, metaRaw, confirmed] = await Promise.all([
+      fsGet(`de-DE/${base}/Years/${year}/Weeks/${week}`, ctx),
+      withEnglish ? fsGet(`en-US/${base}/Years/${year}/Weeks/${week}`, ctx).catch(() => null) : null,
+      fsGet(`de-DE/${base}`, ctx).catch(() => null),
+      loadConfirmed(),
+    ]);
+    const monday = addDays(date, -weekdayIdx(date));
+    const head = {
+      store: m.store, menu: m.menu, portal_url: portalUrl(m), year, week, mode,
+      week_start: isoDate(monday), week_end: isoDate(addDays(monday, 6)),
+      offline_at: ctx.savedAt ? new Date(ctx.savedAt).toISOString() : null,
+    };
+    if (!deRaw) return { ...head, missing: true, message: `No menu published for ${year}-W${pad(week)}`, days: [] };
+    const de = doc(deRaw), en = doc(enRaw) || { Days: [] }, meta = doc(metaRaw) || {};
+    const enProducts = new Map(), enCats = new Map();
+    for (const d of en.Days || []) for (const c of d.Categories || []) {
+      enCats.set(c.Id, c.Name);
+      for (const p of c.Products || []) enProducts.set(p.Id, p.Name);
+    }
+    const allergenNames = new Map();
+    for (const a of meta.Allergens || []) if (!allergenNames.has(a.AllergenId)) allergenNames.set(a.AllergenId, { label: a.Label, name: a.Name });
+    const avoid = settings.avoid;
+    const days = [];
+    for (const d of [...(de.Days || [])].sort((a, b) => (a.Date || "").localeCompare(b.Date || ""))) {
+      const dayDate = d.Date.slice(0, 10);
+      const items = [];
+      for (const c of d.Categories || []) {
+        if (c.IsHidden) continue;
+        for (const p of c.Products || []) {
+          const nameDe = clean(p.Name), nameEn = clean(enProducts.get(p.Id));
+          const nf = p.NutritionFacts || {};
+          const tags = p.CustomTags || [], allergens = p.Allergens || [];
+          const a = HalalRules.analyse(nameDe, nameEn, tags, allergens, nf.AlcoholPer100 || 0, c.Name || "", mode, avoid);
+          items.push(applyConfirmed({
+            id: p.Id, category: c.Name || "", category_en: enCats.get(c.Id) || c.Name || "",
+            name_de: nameDe, name_en: nameEn || nameDe,
+            picture: p.PictureUrl || (p.CoverUrls || [])[0] || null, sold_out: !!p.IsSoldOut,
+            tags: [...new Set(tags.filter((t) => t.Name).map((t) => capitalize(t.Name.trim())))].sort(),
+            allergens: allergens.map((x) => ({ id: x, ...(allergenNames.get(x) || { label: String(x), name: String(x) }) })),
+            kcal: nf.KCalPerServing ?? null, protein: nf.ProteinsPerServing ?? null,
+            carbs: nf.CarbsPerServing ?? null, fat: nf.FatsPerServing ?? null,
+            alcohol_per_100: Math.round((nf.AlcoholPer100 || 0) * 1000) / 1000,
+            weight: p.WeightInGrams ?? null, night: (c.Name || "").toLowerCase().includes("nacht"),
+            ...a,
+          }, confirmed, dayDate));
+        }
+      }
+      if (!items.length) continue;
+      days.push({ date: dayDate, weekday: WEEKDAYS[weekdayIdx(parseDate(dayDate))], items, stats: stats(items), best: bestPick(items) });
+    }
+    return { ...head, days, stats: stats(days.flatMap((d) => d.items)), verdicts: HalalRules.VERDICTS, generated: new Date().toISOString() };
+  }
+  async function trend(weeks, mode) {
+    const today = new Date();
+    const monday = addDays(today, -weekdayIdx(today));
+    const dates = Array.from({ length: weeks }, (_, i) => addDays(monday, -7 * (weeks - 1 - i)));
+    return Promise.all(dates.map(async (d) => {
+      const r = await weekReport(d, mode, { withEnglish: false });
+      return r.missing ? { year: r.year, week: r.week, week_start: r.week_start, total: 0, missing: true }
+        : { year: r.year, week: r.week, week_start: r.week_start, ...r.stats };
+    }));
+  }
+  let storesCache = null;
+  async function findMenus(query) {
+    if (!storesCache) {
+      const raw = await fsGet("de-DE/StoreMetas?pageSize=300");
+      storesCache = (raw?.documents || []).flatMap((d) => doc(d).Stores || []);
+    }
+    const q = query.trim().toLowerCase();
+    const out = [];
+    for (const s of storesCache) for (const m of s.Menus || []) {
+      if (m.ShowInCateringPortal === false) continue;
+      const hay = `${s.LoyaltyProgramName} ${s.City} ${m.Name}`.toLowerCase();
+      if (!q || hay.includes(q)) out.push({ id: m.Id, store: s.LoyaltyProgramName, menu: m.Name, city: s.City, street: s.Street, lat: s.Lat, lng: s.Lng });
+    }
+    return out.sort((a, b) => (a.store + a.menu).localeCompare(b.store + b.menu));
+  }
+  async function get(path) {
+    const url = new URL(path, "http://local");
+    const q = url.searchParams;
+    const mode = HalalRules.MODES.includes(q.get("mode")) ? q.get("mode") : "standard";
+    if (url.pathname === "/api/config") {
+      const m = settings.menu;
+      if (!m.store || m.lat == null) {
+        const hit = (await findMenus("").catch(() => [])).find((x) => x.id === m.id);
+        if (hit) { resolved[m.id] = hit; Object.assign(m, { store: m.store || hit.store, menu: m.menu || hit.menu, city: hit.city, lat: hit.lat, lng: hit.lng }); }
+      }
+      return { menu_id: m.id, store_name: m.store, menu_name: m.menu, portal_url: portalUrl(m), default_mode: "standard",
+               website_url: WEBSITE_URL, city: m.city || DEFAULT_MENU.city,
+               lat: m.lat ?? DEFAULT_MENU.lat, lng: m.lng ?? DEFAULT_MENU.lng,
+               today: isoDate(new Date()), avoid_keywords: settings.avoid, standalone: true };
+    }
+    if (url.pathname === "/api/week") return weekReport(q.get("date") ? parseDate(q.get("date")) : new Date(), mode);
+    if (url.pathname === "/api/trend") return trend(Math.max(1, Math.min(26, Number(q.get("weeks")) || 8)), mode);
+    throw new Error("Unknown endpoint " + url.pathname);
+  }
+  global.LocalApi = { get, settings, findMenus, isoWeek, portalUrl };
+})(window);
+</script>
+<script>
+"use strict";
+const ALLERGENS = [
+  { id: 0, code: "A", en: "Gluten", de: "Gluten" },
+  { id: 1, code: "B", en: "Crustaceans", de: "Krebstiere" },
+  { id: 2, code: "C", en: "Egg", de: "Ei" },
+  { id: 3, code: "D", en: "Fish", de: "Fisch" },
+  { id: 4, code: "E", en: "Peanuts", de: "Erdnüsse" },
+  { id: 5, code: "F", en: "Soy", de: "Soja" },
+  { id: 6, code: "G", en: "Milk / lactose", de: "Milch / Laktose" },
+  { id: 7, code: "H", en: "Tree nuts", de: "Schalenfrüchte" },
+  { id: 8, code: "L", en: "Celery", de: "Sellerie" },
+  { id: 9, code: "M", en: "Mustard", de: "Senf" },
+  { id: 10, code: "N", en: "Sesame", de: "Sesam" },
+  { id: 11, code: "O", en: "Sulphites", de: "Sulfite" },
+  { id: 12, code: "P", en: "Lupin", de: "Lupinen" },
+  { id: 13, code: "R", en: "Molluscs", de: "Weichtiere" },
+];
+const I18N = {};
+I18N.en = {
+  title: "Halal Menu Check",
+  install: "📲 Install app",
+  mode: "Mode",
+  mode_title: "How strictly should dishes be judged?",
+  mode_standard: "Standard",
+  mode_strict: "Strict",
+  mode_relaxed: "Relaxed",
+  lang_title: "Language",
+  theme_title: "Light / dark mode",
+  settings_title: "Settings",
+  prev_week: "Previous week",
+  next_week: "Next week",
+  today: "Today",
+  week_title: "Week {w} · {y}",
+  welcome_html: `<b>👋 Welcome!</b> Every day this page checks the canteen menu for you: <span class="pill green">✅ halal-friendly</span> <span class="pill orange">⚠️ doubtful</span> <span class="pill red">❌ not halal</span>. It always shows the live menu.`,
+  welcome_tip_html: `Tip: <b>🔔 Daily reminder</b> reminds you every day · <b>📲 Install app</b> puts the page on your phone's home screen.`,
+  filter_all: "All",
+  filter_halal: "✅ Halal-friendly",
+  filter_doubtful: "⚠️ Doubtful",
+  filter_haram: "❌ Not halal",
+  filter_fav: "❤️ Favourites",
+  allergy_btn: "🚫 Allergies",
+  allergy_btn_n: "🚫 Allergies ({n})",
+  hide_night: "Hide night menu",
+  search_ph: "Search this week…",
+  loading: "Loading menu…",
+  load_error: "The menu could not be loaded. Please try again later or open the official menu.",
+  not_published: "🕑 The menu for week {w} has not been published yet.",
+  offline: "📴 No connection – showing the menu saved on {when}.",
+  overview_h: "📅 This week at a glance",
+  trend_h: "📈 Halal-friendly trend",
+  week_total_html: "Week total: <b>{h}</b> of {t} dishes halal-friendly ({p}%).",
+  trend_legend_html: `Share of dishes per week: <span style="color:var(--green)">■</span> halal-friendly <span style="color:var(--orange)">■</span> doubtful <span style="color:var(--red)">■</span> not halal. Click a bar to open that week.`,
+  trend_aria: "Halal-friendly share per week",
+  wk_short: "W",
+  how_h: "ℹ️ How it works",
+  how_list_html: `<li><b>❌ Not halal</b> – labelled or named pork, sausage, gelatine, alcohol in the name, or the recipe data shows notable alcohol (for example wine in the sauce).</li>
+<li><b>⚠️ Doubtful</b> – meat from permissible animals without stated halal slaughter, meat of an unspecified animal, meat stock, or traces of alcohol.</li>
+<li><b>✅ Halal-friendly</b> – vegan, vegetarian or fish with no warning signs.</li>
+<li><b>👨‍🍳 Confirmed by kitchen</b> – the kitchen staff confirmed the dish.</li>
+<li><b>Modes:</b> <i>Strict</i> treats every small concern (rennet cheese, traces of alcohol, seafood) as doubtful. <i>Relaxed</i> accepts meat of permissible animals without halal certification.</li>`,
+  disclaimer_html: `⚠️ The canteen does not publish halal certification. This page checks the published menu data automatically – it is not a religious ruling. Shared grills, fryers or utensils cannot be detected. When in doubt, ask the kitchen staff with the <b>🗣️ Ask the kitchen</b> button.`,
+  footer_html: `<b>Halal Menu Check</b> · Menu data is loaded live from the official Dussmann catering portal · Prayer times by AlAdhan · Independent community project, not affiliated with the canteen operator.`,
+  today_badge: "TODAY",
+  fav_dot: "A favourite dish is served",
+  no_menu_day: "No menu for this day.",
+  hero_today: "Today",
+  hero_big_html: `{when}: <span class="n">{h}</span> of {t} dishes are halal-friendly`,
+  count_halal: "✅ {n} halal-friendly",
+  count_doubtful: "⚠️ {n} doubtful",
+  count_haram: "❌ {n} not halal",
+  count_unknown: "❔ {n} unknown",
+  fav_here_html: "❤️ Your favourite <b>{names}</b> is on the menu!",
+  fav_coming: "❤️ Coming up: {list}",
+  btn_share: "📤 Share",
+  btn_ask: "🗣️ Ask the kitchen",
+  btn_reminder: "🔔 Daily reminder",
+  btn_official: "🔗 Official menu",
+  best_lbl: "⭐ Best halal pick",
+  best_reason: "Most protein ({g} g) among the halal-friendly main dishes",
+  best_reason_np: "Halal-friendly main dish",
+  no_best_lbl: "No clear halal pick",
+  no_best_why: "Check the doubtful dishes or ask the kitchen.",
+  hidden_one: "1 dish is hidden because of your allergies.",
+  hidden_many: "{n} dishes are hidden because of your allergies.",
+  sold_out: "SOLD OUT",
+  best_badge: "⭐ BEST PICK",
+  kitchen_badge: "👨‍🍳 Confirmed by kitchen",
+  allergy_badge: "⚠️ Contains: {list}",
+  fav_title: "Favourite",
+  kcal: "🔥 {n} kcal",
+  protein: "💪 {g} g protein",
+  no_match: "No dishes match this filter.",
+  v_halal: "Halal-friendly",
+  v_doubtful: "Doubtful",
+  v_haram: "Not halal",
+  v_unknown: "Unknown",
+  sum_title: "🥗 Halal check – {date} – {store}",
+  sum_halal: "✅ Halal-friendly:",
+  sum_doubtful: "⚠️ Doubtful:",
+  sum_haram: "❌ Not halal:",
+  sum_best: "⭐ Best pick: {name}",
+  sum_link: "Full menu: {url}",
+  share_copied: "Copied – paste it into Teams or WhatsApp",
+  ask_h: "🗣️ Ask the kitchen",
+  ask_intro: "Polite questions about today's doubtful dishes. Show or read the German question to the staff – the English translation is underneath.",
+  ask_none: "Nothing to ask – there are no doubtful dishes today 🎉",
+  copy_de: "📋 Copy in German",
+  copy_en: "📋 Copy in English",
+  ask_copied: "Questions copied",
+  close: "Close",
+  save: "Save",
+  download: "⬇️ Download",
+  reminder_h: "🔔 Daily reminder",
+  rem_time: "Time",
+  rem_weekend: "Also on weekends",
+  rem_win_h: "🔔 Windows notification",
+  rem_win_p: "A pop-up on this PC every day. Click it to open the menu.",
+  rem_win_steps_html: "<li>Click <b>Download</b>.</li><li>Open the downloaded file. If Windows asks, click <b>Keep</b> or <b>More info → Run anyway</b>.</li><li>Done – a confirmation pops up.</li>",
+  rem_win_remove: "Remove the Windows reminder",
+  rem_cal_h: "📅 Outlook calendar",
+  rem_cal_p: "A calendar reminder – it also shows on your phone if you use Outlook there.",
+  rem_cal_steps_html: "<li>Click <b>Download</b>.</li><li>Open the file – Outlook opens it.</li><li>Click <b>Save &amp; Close</b>.</li>",
+  rem_cal_done: "Downloaded – open the file and click Save & Close",
+  rem_win_done: "Downloaded – open the file to turn on the reminder",
+  rem_win_rm_done: "Downloaded – open the file to remove the reminder",
+  ics_summary: "🥗 Halal menu check",
+  ics_desc: "Today's halal-friendly dishes in the canteen:\n{url}",
+  win_title: "🥗 Halal menu check",
+  win_text: "See which dishes are halal-friendly today.",
+  win_open: "Open menu",
+  win_later: "Later",
+  win_ok_title: "✅ Reminder is on",
+  win_ok_text: "You will get this reminder at {time} ({days}). Click to open the menu.",
+  win_days_week: "Monday to Friday",
+  win_days_all: "every day",
+  win_done: "Done! You will get a reminder at {time} ({days}).",
+  win_close: "You can close this window. To remove the reminder later, use Remove the Windows reminder on the website.",
+  win_removed: "The halal menu reminder was removed from this PC.",
+  settings_h: "⚙️ Settings",
+  canteen_h: "📍 Canteen",
+  canteen_current: "Current:",
+  canteen_ph: "Search city or canteen, e.g. Villach, Graz…",
+  searching: "Searching…",
+  no_canteen: "No canteen found.",
+  avoid_h: "🚫 Personal avoid list",
+  avoid_p_html: "Dishes containing these words are marked ❌ (comma-separated, e.g. <i>mushroom, gorgonzola</i>).",
+  share_h: "🔗 Share",
+  share_hosted: "Copy a link that opens this page with the selected canteen.",
+  share_file_html: "Send this <b>HTML file</b> to colleagues (Teams, e-mail…). It opens in any browser and loads the live menu.",
+  copy_link: "🔗 Copy link",
+  link_copied: "Link copied",
+  settings_saved: "Settings saved",
+  allergy_h: "🚫 My allergies",
+  allergy_p: "Choose your allergens. Dishes that contain them are hidden or marked. This is saved only on this device.",
+  allergy_hide: "Hide dishes with my allergens (otherwise they are only marked)",
+  allergy_clear: "Clear all",
+  allergy_saved: "Allergies saved",
+  prayer_h: "🕌 Prayer times today",
+  prayer_next: "next: {name} in {in}",
+  prayer_method: "Calculation method",
+  prayer_school: "Asr time",
+  school_0: "Standard (Shafiʿi, Maliki, Hanbali)",
+  school_1: "Hanafi",
+  prayer_note: "Calculated prayer times for the canteen's location. Your mosque's calendar may differ by a few minutes.",
+  sunrise: "Sunrise",
+  print_btn: "🖨️ Print week",
+  print_title: "Halal menu – week {w}",
+  print_day: "Day",
+  print_halal: "✅ Halal-friendly",
+  print_doubtful: "⚠️ Doubtful – please ask the kitchen",
+  print_scan: "Scan for the live menu, explanations and daily reminders",
+  print_note: "Automatic check of the published menu – not a religious ruling. When in doubt, ask the kitchen staff.",
+  fav_added: "❤️ Added to favourites – you'll see when it's served",
+  fav_removed: "Removed from favourites",
+  install_ios: "To install on iPhone: tap the Share button in Safari, then “Add to Home Screen”.",
+  installed: "📲 Installed – find “Halal Menu” on your home screen",
+};
+I18N.de = {
+  title: "Halal Menu Check",
+  install: "📲 App installieren",
+  mode: "Modus",
+  mode_title: "Wie streng sollen die Gerichte bewertet werden?",
+  mode_standard: "Standard",
+  mode_strict: "Streng",
+  mode_relaxed: "Locker",
+  lang_title: "Sprache",
+  theme_title: "Hell / dunkel",
+  settings_title: "Einstellungen",
+  prev_week: "Vorige Woche",
+  next_week: "Nächste Woche",
+  today: "Heute",
+  week_title: "KW {w} · {y}",
+  welcome_html: `<b>👋 Willkommen!</b> Diese Seite prüft jeden Tag das Kantinenmenü für dich: <span class="pill green">✅ halal-freundlich</span> <span class="pill orange">⚠️ fraglich</span> <span class="pill red">❌ nicht halal</span>. Es wird immer das aktuelle Menü angezeigt.`,
+  welcome_tip_html: `Tipp: <b>🔔 Tägliche Erinnerung</b> erinnert dich jeden Tag · <b>📲 App installieren</b> legt die Seite auf den Startbildschirm deines Handys.`,
+  filter_all: "Alle",
+  filter_halal: "✅ Halal-freundlich",
+  filter_doubtful: "⚠️ Fraglich",
+  filter_haram: "❌ Nicht halal",
+  filter_fav: "❤️ Favoriten",
+  allergy_btn: "🚫 Allergien",
+  allergy_btn_n: "🚫 Allergien ({n})",
+  hide_night: "Nachtmenü ausblenden",
+  search_ph: "Diese Woche durchsuchen…",
+  loading: "Menü wird geladen…",
+  load_error: "Das Menü konnte nicht geladen werden. Bitte später erneut versuchen oder das offizielle Menü öffnen.",
+  not_published: "🕑 Das Menü für KW {w} ist noch nicht veröffentlicht.",
+  offline: "📴 Keine Verbindung – angezeigt wird das am {when} gespeicherte Menü.",
+  overview_h: "📅 Diese Woche im Überblick",
+  trend_h: "📈 Halal-freundlicher Anteil",
+  week_total_html: "Gesamte Woche: <b>{h}</b> von {t} Gerichten halal-freundlich ({p} %).",
+  trend_legend_html: `Anteil der Gerichte pro Woche: <span style="color:var(--green)">■</span> halal-freundlich <span style="color:var(--orange)">■</span> fraglich <span style="color:var(--red)">■</span> nicht halal. Klicke auf einen Balken, um die Woche zu öffnen.`,
+  trend_aria: "Halal-freundlicher Anteil pro Woche",
+  wk_short: "KW",
+  how_h: "ℹ️ So funktioniert es",
+  how_list_html: `<li><b>❌ Nicht halal</b> – als Schwein gekennzeichnet oder benannt, Wurst, Gelatine, Alkohol im Namen, oder die Rezeptdaten zeigen deutlich Alkohol (zum Beispiel Wein in der Sauce).</li>
+<li><b>⚠️ Fraglich</b> – Fleisch erlaubter Tiere ohne Angabe zur Halal-Schlachtung, Fleisch ohne Angabe der Tierart, Fleischbrühe oder Spuren von Alkohol.</li>
+<li><b>✅ Halal-freundlich</b> – vegan, vegetarisch oder Fisch ohne Warnhinweise.</li>
+<li><b>👨‍🍳 Von der Küche bestätigt</b> – das Küchenteam hat das Gericht bestätigt.</li>
+<li><b>Modi:</b> <i>Streng</i> wertet jede Kleinigkeit (Käse mit tierischem Lab, Alkoholspuren, Meeresfrüchte) als fraglich. <i>Locker</i> akzeptiert Fleisch erlaubter Tiere ohne Halal-Zertifikat.</li>`,
+  disclaimer_html: `⚠️ Die Kantine veröffentlicht keine Halal-Zertifizierung. Diese Seite prüft die veröffentlichten Menüdaten automatisch – das ist kein religiöses Urteil. Gemeinsam genutzte Grills, Fritteusen oder Utensilien können nicht erkannt werden. Im Zweifel frag das Küchenteam – mit dem Button <b>🗣️ Küche fragen</b>.`,
+  footer_html: `<b>Halal Menu Check</b> · Die Menüdaten werden live aus dem offiziellen Dussmann-Catering-Portal geladen · Gebetszeiten von AlAdhan · Unabhängiges Gemeinschaftsprojekt, nicht mit dem Kantinenbetreiber verbunden.`,
+  today_badge: "HEUTE",
+  fav_dot: "Ein Lieblingsgericht wird serviert",
+  no_menu_day: "Für diesen Tag gibt es kein Menü.",
+  hero_today: "Heute",
+  hero_big_html: `{when}: <span class="n">{h}</span> von {t} Gerichten sind halal-freundlich`,
+  count_halal: "✅ {n} halal-freundlich",
+  count_doubtful: "⚠️ {n} fraglich",
+  count_haram: "❌ {n} nicht halal",
+  count_unknown: "❔ {n} unbekannt",
+  fav_here_html: "❤️ Dein Lieblingsgericht <b>{names}</b> steht auf dem Menü!",
+  fav_coming: "❤️ Demnächst: {list}",
+  btn_share: "📤 Teilen",
+  btn_ask: "🗣️ Küche fragen",
+  btn_reminder: "🔔 Tägliche Erinnerung",
+  btn_official: "🔗 Offizielles Menü",
+  best_lbl: "⭐ Beste Halal-Wahl",
+  best_reason: "Am meisten Eiweiß ({g} g) unter den halal-freundlichen Hauptgerichten",
+  best_reason_np: "Halal-freundliches Hauptgericht",
+  no_best_lbl: "Keine eindeutige Halal-Wahl",
+  no_best_why: "Schau dir die fraglichen Gerichte an oder frag die Küche.",
+  hidden_one: "1 Gericht ist wegen deiner Allergien ausgeblendet.",
+  hidden_many: "{n} Gerichte sind wegen deiner Allergien ausgeblendet.",
+  sold_out: "AUSVERKAUFT",
+  best_badge: "⭐ BESTE WAHL",
+  kitchen_badge: "👨‍🍳 Von der Küche bestätigt",
+  allergy_badge: "⚠️ Enthält: {list}",
+  fav_title: "Favorit",
+  kcal: "🔥 {n} kcal",
+  protein: "💪 {g} g Eiweiß",
+  no_match: "Keine Gerichte für diesen Filter.",
+  v_halal: "Halal-freundlich",
+  v_doubtful: "Fraglich",
+  v_haram: "Nicht halal",
+  v_unknown: "Unbekannt",
+  sum_title: "🥗 Halal-Check – {date} – {store}",
+  sum_halal: "✅ Halal-freundlich:",
+  sum_doubtful: "⚠️ Fraglich:",
+  sum_haram: "❌ Nicht halal:",
+  sum_best: "⭐ Beste Wahl: {name}",
+  sum_link: "Ganzes Menü: {url}",
+  share_copied: "Kopiert – füge es in Teams oder WhatsApp ein",
+  ask_h: "🗣️ Küche fragen",
+  ask_intro: "Höfliche Fragen zu den heutigen fraglichen Gerichten. Zeig oder lies dem Personal die deutsche Frage vor – darunter steht die englische Übersetzung.",
+  ask_none: "Heute gibt es nichts zu fragen – keine fraglichen Gerichte 🎉",
+  copy_de: "📋 Auf Deutsch kopieren",
+  copy_en: "📋 Auf Englisch kopieren",
+  ask_copied: "Fragen kopiert",
+  close: "Schließen",
+  save: "Speichern",
+  download: "⬇️ Herunterladen",
+  reminder_h: "🔔 Tägliche Erinnerung",
+  rem_time: "Uhrzeit",
+  rem_weekend: "Auch am Wochenende",
+  rem_win_h: "🔔 Windows-Benachrichtigung",
+  rem_win_p: "Jeden Tag ein Pop-up auf diesem PC. Ein Klick öffnet das Menü.",
+  rem_win_steps_html: "<li>Klicke auf <b>Herunterladen</b>.</li><li>Öffne die heruntergeladene Datei. Wenn Windows fragt, klicke auf <b>Beibehalten</b> bzw. <b>Weitere Informationen → Trotzdem ausführen</b>.</li><li>Fertig – eine Bestätigung erscheint.</li>",
+  rem_win_remove: "Windows-Erinnerung entfernen",
+  rem_cal_h: "📅 Outlook-Kalender",
+  rem_cal_p: "Eine Kalender-Erinnerung – sie erscheint auch am Handy, wenn du dort Outlook nutzt.",
+  rem_cal_steps_html: "<li>Klicke auf <b>Herunterladen</b>.</li><li>Öffne die Datei – Outlook öffnet sie.</li><li>Klicke auf <b>Speichern &amp; schließen</b>.</li>",
+  rem_cal_done: "Heruntergeladen – Datei öffnen und auf Speichern & schließen klicken",
+  rem_win_done: "Heruntergeladen – öffne die Datei, um die Erinnerung einzuschalten",
+  rem_win_rm_done: "Heruntergeladen – öffne die Datei, um die Erinnerung zu entfernen",
+  ics_summary: "🥗 Halal-Menü-Check",
+  ics_desc: "Die heutigen halal-freundlichen Gerichte in der Kantine:\n{url}",
+  win_title: "🥗 Halal-Menü-Check",
+  win_text: "Schau nach, welche Gerichte heute halal-freundlich sind.",
+  win_open: "Menü öffnen",
+  win_later: "Später",
+  win_ok_title: "✅ Erinnerung ist eingeschaltet",
+  win_ok_text: "Du bekommst diese Erinnerung um {time} ({days}). Klicke, um das Menü zu öffnen.",
+  win_days_week: "Montag bis Freitag",
+  win_days_all: "jeden Tag",
+  win_done: "Fertig! Du bekommst um {time} ({days}) eine Erinnerung.",
+  win_close: "Du kannst dieses Fenster schließen. Zum Entfernen nutze später Windows-Erinnerung entfernen auf der Website.",
+  win_removed: "Die Halal-Menü-Erinnerung wurde von diesem PC entfernt.",
+  settings_h: "⚙️ Einstellungen",
+  canteen_h: "📍 Kantine",
+  canteen_current: "Aktuell:",
+  canteen_ph: "Stadt oder Kantine suchen, z. B. Villach, Graz…",
+  searching: "Suche…",
+  no_canteen: "Keine Kantine gefunden.",
+  avoid_h: "🚫 Persönliche Ausschlussliste",
+  avoid_p_html: "Gerichte mit diesen Wörtern werden mit ❌ markiert (mit Komma getrennt, z. B. <i>pilz, gorgonzola</i>).",
+  share_h: "🔗 Teilen",
+  share_hosted: "Kopiere einen Link, der diese Seite mit der gewählten Kantine öffnet.",
+  share_file_html: "Schick diese <b>HTML-Datei</b> an Kolleginnen und Kollegen (Teams, E-Mail…). Sie öffnet sich in jedem Browser und lädt das aktuelle Menü.",
+  copy_link: "🔗 Link kopieren",
+  link_copied: "Link kopiert",
+  settings_saved: "Einstellungen gespeichert",
+  allergy_h: "🚫 Meine Allergien",
+  allergy_p: "Wähle deine Allergene. Gerichte, die sie enthalten, werden ausgeblendet oder markiert. Das wird nur auf diesem Gerät gespeichert.",
+  allergy_hide: "Gerichte mit meinen Allergenen ausblenden (sonst nur markieren)",
+  allergy_clear: "Alle entfernen",
+  allergy_saved: "Allergien gespeichert",
+  prayer_h: "🕌 Gebetszeiten heute",
+  prayer_next: "nächstes: {name} in {in}",
+  prayer_method: "Berechnungsmethode",
+  prayer_school: "Asr-Zeit",
+  school_0: "Standard (Schafiʿi, Maliki, Hanbali)",
+  school_1: "Hanafi",
+  prayer_note: "Berechnete Gebetszeiten für den Standort der Kantine. Der Kalender deiner Moschee kann um einige Minuten abweichen.",
+  sunrise: "Sonnenaufgang",
+  print_btn: "🖨️ Woche drucken",
+  print_title: "Halal-Menü – KW {w}",
+  print_day: "Tag",
+  print_halal: "✅ Halal-freundlich",
+  print_doubtful: "⚠️ Fraglich – bitte in der Küche nachfragen",
+  print_scan: "Scannen für das aktuelle Menü, Erklärungen und tägliche Erinnerungen",
+  print_note: "Automatische Prüfung des veröffentlichten Menüs – kein religiöses Urteil. Im Zweifel das Küchenteam fragen.",
+  fav_added: "❤️ Zu Favoriten hinzugefügt – du siehst, wann es serviert wird",
+  fav_removed: "Aus Favoriten entfernt",
+  install_ios: "Installieren am iPhone: In Safari auf Teilen tippen, dann „Zum Home-Bildschirm“.",
+  installed: "📲 Installiert – du findest „Halal Menu“ auf deinem Startbildschirm",
+};
+</script>
+<script>
+"use strict";
+function buildIcs(time, weekends) {
+  const [hh, mm] = time.split(":").map(Number);
+  const p2 = (n) => String(n).padStart(2, "0");
+  const now = new Date();
+  const ymd = `${now.getFullYear()}${p2(now.getMonth() + 1)}${p2(now.getDate())}`;
+  const end = new Date(2000, 0, 1, hh, mm + 5);
+  const url = siteUrl();
+  const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+  const escTxt = (s) => s.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+  const enc = new TextEncoder();
+  const fold = (line) => {
+    if (enc.encode(line).length <= 75) return line;
+    const out = []; let cur = "", n = 0;
+    for (const ch of line) {
+      const b = enc.encode(ch).length;
+      if (n + b > (out.length ? 74 : 75)) { out.push(cur); cur = ""; n = 0; }
+      cur += ch; n += b;
+    }
+    out.push(cur);
+    return out.join("\r\n ");
+  };
+  const lines = [
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Halal Menu Check//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "BEGIN:VTIMEZONE", "TZID:Europe/Vienna",
+    "BEGIN:DAYLIGHT", "TZOFFSETFROM:+0100", "TZOFFSETTO:+0200", "TZNAME:CEST", "DTSTART:19700329T020000", "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU", "END:DAYLIGHT",
+    "BEGIN:STANDARD", "TZOFFSETFROM:+0200", "TZOFFSETTO:+0100", "TZNAME:CET", "DTSTART:19701025T030000", "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU", "END:STANDARD",
+    "END:VTIMEZONE",
+    "BEGIN:VEVENT",
+    "UID:halal-menu-check-daily-reminder@halal-menu-check",
+    `DTSTAMP:${stamp}`,
+    `DTSTART;TZID=Europe/Vienna:${ymd}T${p2(hh)}${p2(mm)}00`,
+    `DTEND;TZID=Europe/Vienna:${ymd}T${p2(end.getHours())}${p2(end.getMinutes())}00`,
+    `RRULE:FREQ=WEEKLY;BYDAY=${weekends ? "MO,TU,WE,TH,FR,SA,SU" : "MO,TU,WE,TH,FR"}`,
+    `SUMMARY:${escTxt(t("ics_summary"))}`,
+    `DESCRIPTION:${escTxt(t("ics_desc", { url }))}`,
+    `LOCATION:${escTxt(url)}`,
+    `URL:${url}`,
+    "TRANSP:TRANSPARENT", "X-MICROSOFT-CDO-BUSYSTATUS:FREE", "CLASS:PUBLIC",
+    "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${escTxt(t("ics_summary"))}`, "TRIGGER:PT0M", "END:VALARM",
+    "END:VEVENT", "END:VCALENDAR",
+  ];
+  return lines.map(fold).join("\r\n") + "\r\n";
+}
+const WIN_REMINDER_PS = [
+  "#PSSTART",
+  "$ErrorActionPreference = 'Stop'",
+  "$TaskName = 'Halal menu reminder'",
+  "if (__REMOVE__) {",
+  "  Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false -ErrorAction SilentlyContinue",
+  "  Write-Host ''; Write-Host '  __T_REMOVED__' -ForegroundColor Green",
+  "  return",
+  "}",
+  "$Url = '__URL__'",
+  "$tpl = @'",
+  "if (__LATE__ -and (Get-Date).Hour -ge 15) { exit }",
+  "[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null",
+  "[Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null",
+  "$x = New-Object Windows.Data.Xml.Dom.XmlDocument",
+  "$x.LoadXml('<toast launch=\"__URL__\" activationType=\"protocol\" duration=\"long\"><visual><binding template=\"ToastGeneric\"><text>__TITLE__</text><text>__TEXT__</text></binding></visual><actions><action content=\"__T_OPEN__\" activationType=\"protocol\" arguments=\"__URL__\"/><action content=\"__T_LATER__\" activationType=\"system\" arguments=\"dismiss\"/></actions></toast>')",
+  "[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe').Show([Windows.UI.Notifications.ToastNotification]::new($x))",
+  "'@",
+  "function Enc($title, $text, $late) {",
+  "  $s = $tpl.Replace('__URL__', $Url).Replace('__TITLE__', $title).Replace('__TEXT__', $text).Replace('__LATE__', $late)",
+  "  [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($s))",
+  "}",
+  "$daily = Enc '__T_TITLE__' '__T_TEXT__' '$true'",
+  "$hello = Enc '__T_OK_TITLE__' '__T_OK_TEXT__' '$false'",
+  "$action = New-ScheduledTaskAction -Execute 'conhost.exe' -Argument \"--headless powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand $daily\"",
+  "$trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek @(__DAYS__) -At '__TIME__'",
+  "$settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Minutes 5)",
+  "Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger $trigger -Settings $settings -Description \"Halal menu reminder: $Url\" -Force | Out-Null",
+  "Start-Process conhost.exe -ArgumentList '--headless', 'powershell.exe', '-NoProfile', '-EncodedCommand', $hello",
+  "Write-Host ''; Write-Host '  __T_DONE__' -ForegroundColor Green",
+  "Write-Host '  __T_CLOSE__'",
+];
+function buildWinReminder(time, weekends, remove = false) {
+  const days = weekends ? ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const daysText = t(weekends ? "win_days_all" : "win_days_week");
+  const safe = (s) => s.replace(/'/g, "’").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const plain = (s) => s.replace(/'/g, "’");
+  const tokens = {
+    __REMOVE__: remove ? "$true" : "$false",
+    __URL__: safe(siteUrl()),
+    __T_REMOVED__: plain(t("win_removed")),
+    __T_OPEN__: safe(t("win_open")),
+    __T_LATER__: safe(t("win_later")),
+    __T_TITLE__: safe(t("win_title")),
+    __T_TEXT__: safe(t("win_text")),
+    __T_OK_TITLE__: safe(t("win_ok_title")),
+    __T_OK_TEXT__: safe(t("win_ok_text", { time, days: daysText })),
+    __DAYS__: days.map((d) => `'${d}'`).join(","),
+    __TIME__: time,
+    __T_DONE__: plain(t("win_done", { time, days: daysText })),
+    __T_CLOSE__: plain(t("win_close")),
+  };
+  let ps = WIN_REMINDER_PS.join("\r\n");
+  for (const [k, v] of Object.entries(tokens)) ps = ps.replace(k, () => v);
+  const bat = [
+    "@echo off",
+    "title Halal Menu Check",
+    "echo Halal Menu Check - please wait / bitte warten...",
+    "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \"$s = Get-Content -LiteralPath '%~f0' -Raw -Encoding UTF8; Invoke-Expression $s.Substring($s.IndexOf('#PS' + 'START'))\"",
+    "echo.",
+    "pause",
+    "exit /b",
+  ];
+  return bat.join("\r\n") + "\r\n" + ps + "\r\n";
+}
+function download(name, text, type) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], { type }));
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+function openReminder() {
+  const time = () => $("#remTime").value || "10:30";
+  $("#remDownload").onclick = () => {
+    download("Halal-menu-reminder.ics", buildIcs(time(), $("#remWeekend").checked), "text/calendar;charset=utf-8");
+    toast(t("rem_cal_done"));
+  };
+  $("#remWin").onclick = () => {
+    download("Halal-menu-reminder.cmd", buildWinReminder(time(), $("#remWeekend").checked), "application/octet-stream");
+    toast(t("rem_win_done"));
+  };
+  $("#remWinRemove").onclick = (e) => {
+    e.preventDefault();
+    download("Remove-halal-menu-reminder.cmd", buildWinReminder(time(), false, true), "application/octet-stream");
+    toast(t("rem_win_rm_done"));
+  };
+  $("#reminderDialog").showModal();
+}
+</script>
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+const store = {
+  get: (k, d) => { try { const v = localStorage.getItem("hm-" + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set: (k, v) => { try { localStorage.setItem("hm-" + k, JSON.stringify(v)); } catch {  } },
+};
+const p2 = (n) => String(n).padStart(2, "0");
+const isoDay = (d) => `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
+const detectLang = () => ((navigator.language || "en").toLowerCase().startsWith("de") ? "de" : "en");
+const state = {
+  week: null,
+  selected: null,
+  filter: "all",
+  search: "",
+  mode: store.get("mode", null),
+  lang: store.get("lang", null) || detectLang(),
+  hideNight: store.get("hideNight", true),
+  favs: new Set(store.get("favs", [])),
+  allergies: new Set(store.get("allergies", [])),
+  hideAllergens: store.get("hideAllergens", true),
+  prayerMethod: store.get("prayerMethod", 3),
+  prayerSchool: store.get("prayerSchool", 0),
+  today: isoDay(new Date()),
+  cfg: {},
+};
+const COLORS = { halal: "green", doubtful: "orange", haram: "red", unknown: "grey" };
+const SEV_ICON = { haram: "⛔", doubtful: "⚠️", caution: "ℹ️", ok: "✔️" };
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+function t(key, params = {}) {
+  const s = I18N[state.lang]?.[key] ?? I18N.en[key] ?? key;
+  return s.replace(/\{(\w+)\}/g, (m, k) => (k in params ? params[k] : m));
+}
+const locale = () => (state.lang === "de" ? "de-AT" : "en-GB");
+const fmtDay = (iso, opts) => new Date(iso + "T12:00:00").toLocaleDateString(locale(), opts);
+const weekdayOf = (iso, style = "long") => fmtDay(iso, { weekday: style });
+const addDays = (iso, n) => { const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() + n); return isoDay(d); };
+const favKey = (i) => i.name_de.toLowerCase().replace(/\s+/g, " ").trim();
+const nameOf = (i) => (state.lang === "de" ? i.name_de : i.name_en || i.name_de);
+const altName = (i) => (state.lang === "de" ? i.name_en : i.name_de);
+const catOf = (i) => (state.lang === "de" ? i.category : i.category_en || i.category);
+const findingText = (f) => (state.lang === "de" ? f.text_de || f.text : f.text);
+const allergenName = (a) => (state.lang === "de" ? a.de : a.en);
+function toast(msg, ms = 2600) {
+  const el = $("#toast");
+  el.textContent = msg; el.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), ms);
+}
+async function api(path) {
+  if (window.LocalApi) return window.LocalApi.get(path);
+  const r = await fetch(path);
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+}
+function siteUrl() {
+  const hosted = location.protocol === "https:" && !/(^|\.)localhost$/.test(location.hostname);
+  return hosted ? location.origin + location.pathname : state.cfg.website_url || location.href;
+}
+function allergyHits(i) {
+  if (!state.allergies.size) return [];
+  const ids = new Set((i.allergens || []).map((a) => a.id));
+  return ALLERGENS.filter((a) => state.allergies.has(a.id) && ids.has(a.id));
+}
+const hiddenByAllergy = (i) => state.hideAllergens && allergyHits(i).length > 0;
+function visibleItems(items) {
+  return items.filter((i) => !(state.hideNight && i.night) && !hiddenByAllergy(i));
+}
+function personalBest(day) {
+  const pick = (item, protein) => (item ? { item, protein: protein ?? (item.protein ? Math.round(item.protein) : null) } : null);
+  if (!state.allergies.size) return day.best ? pick(day.items.find((i) => i.id === day.best.id), day.best.protein) : null;
+  const ok = day.items.filter((i) => i.verdict === "halal" && !i.sold_out && !i.night && !allergyHits(i).length);
+  if (!ok.length) return null;
+  let pool = ok.filter((i) => !/supp|soup/i.test(i.category));
+  if (!pool.length) pool = ok;
+  const clear = pool.filter((i) => !i.findings.some((f) => f.severity === "caution"));
+  if (clear.length) pool = clear;
+  return pick(pool.reduce((a, b) => ((b.protein || 0) > (a.protein || 0) ? b : a)));
+}
+async function loadWeek(date) {
+  const status = $("#status");
+  status.className = "status"; status.textContent = t("loading");
+  try {
+    const wk = await api(`/api/week?date=${date}&mode=${state.mode}`);
+    state.week = wk;
+    const dates = wk.days.map((d) => d.date);
+    state.selected = dates.includes(date) ? date : dates.includes(state.today) ? state.today : dates[0] || date;
+    render();
+  } catch (e) {
+    status.className = "status error";
+    status.textContent = t("load_error");
+  }
+}
+async function loadTrend() {
+  const el = $("#trend");
+  el.innerHTML = `<div class="muted">${esc(t("loading"))}</div>`;
+  try {
+    state.trend = await api(`/api/trend?mode=${state.mode}`);
+    renderTrend();
+  } catch {
+    el.innerHTML = "";
+  }
+}
+function renderStatus() {
+  const wk = state.week, status = $("#status");
+  if (!wk) return;
+  status.className = "status";
+  if (wk.offline_at) {
+    status.className = "status info";
+    status.textContent = t("offline", { when: new Date(wk.offline_at).toLocaleString(locale(), { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) });
+  } else {
+    status.textContent = wk.missing ? t("not_published", { w: wk.week }) : "";
+  }
+}
+function render() {
+  const wk = state.week;
+  if (!wk) return;
+  $("#weekTitle").textContent = t("week_title", { w: wk.week, y: wk.year });
+  const start = wk.week_start, end = addDays(start, 6);
+  $("#weekRange").textContent = `${fmtDay(start, { day: "2-digit", month: "short" })} – ${fmtDay(end, { day: "2-digit", month: "short", year: "numeric" })}`;
+  renderStatus(); renderTabs(); renderHero(); renderDishes(); renderOverview();
+}
+function statBar(stats, cls = "bar") {
+  const total = stats.total || 1;
+  const seg = (k, c) => (stats[k] ? `<div class="seg-${c}" style="width:${(100 * stats[k]) / total}%"></div>` : "");
+  return `<div class="${cls}">${seg("halal", "green")}${seg("doubtful", "orange")}${seg("haram", "red")}${seg("unknown", "grey")}</div>`;
+}
+function renderTabs() {
+  $("#dayTabs").innerHTML = state.week.days.map((d) => {
+    const hasFav = d.items.some((i) => state.favs.has(favKey(i)));
+    return `<button class="daytab ${d.date === state.selected ? "active" : ""}" data-date="${d.date}">
+      ${d.date === state.today ? `<span class="today-dot">${esc(t("today_badge"))}</span>` : ""}
+      ${hasFav ? `<span class="fav-dot" title="${esc(t("fav_dot"))}">❤️</span>` : ""}
+      <div class="d">${esc(weekdayOf(d.date, "short"))}</div>
+      <div class="dt">${fmtDay(d.date, { day: "2-digit", month: "2-digit" })} · ✅ ${d.stats.halal}/${d.stats.total}</div>
+      ${statBar(d.stats)}
+    </button>`;
+  }).join("");
+}
+const selectedDay = () => state.week?.days.find((d) => d.date === state.selected);
+function renderHero() {
+  const hero = $("#hero");
+  const day = selectedDay();
+  if (!day) { hero.innerHTML = `<div class="empty">${esc(t("no_menu_day"))}</div>`; return; }
+  const s = day.stats;
+  const best = personalBest(day);
+  const when = day.date === state.today ? t("hero_today") : weekdayOf(day.date);
+  const favsHere = [...new Set(day.items.filter((i) => state.favs.has(favKey(i))).map(nameOf))];
+  const upcoming = state.week.days.filter((d) => d.date > state.selected)
+    .flatMap((d) => d.items.filter((i) => state.favs.has(favKey(i))).map((i) => `${nameOf(i)} (${weekdayOf(d.date)})`));
+  const bi = best?.item;
+  hero.innerHTML = `
+    <div>
+      <div class="muted">${esc(fmtDay(day.date, { weekday: "long", day: "numeric", month: "long", year: "numeric" }))} · ${esc(state.week.store)}</div>
+      <div class="big">${t("hero_big_html", { when: esc(when), h: s.halal, t: s.total })}</div>
+      <div class="counts">
+        <span class="count green">${esc(t("count_halal", { n: s.halal }))}</span>
+        <span class="count orange">${esc(t("count_doubtful", { n: s.doubtful }))}</span>
+        <span class="count red">${esc(t("count_haram", { n: s.haram }))}</span>
+        ${s.unknown ? `<span class="count grey">${esc(t("count_unknown", { n: s.unknown }))}</span>` : ""}
+      </div>
+      ${favsHere.length ? `<div>${t("fav_here_html", { names: esc(favsHere.join(", ")) })}</div>` : ""}
+      ${upcoming.length ? `<div class="muted">${esc(t("fav_coming", { list: [...new Set(upcoming)].slice(0, 3).join(", ") }))}</div>` : ""}
+      <div class="actions">
+        <button class="pill-btn primary" id="shareBtn">${esc(t("btn_share"))}</button>
+        <button class="pill-btn" id="askBtn">${esc(t("btn_ask"))}</button>
+        <button class="pill-btn" id="reminderBtn">${esc(t("btn_reminder"))}</button>
+        <a class="pill-btn" href="${esc(state.week.portal_url)}" target="_blank" rel="noopener">${esc(t("btn_official"))}</a>
+      </div>
+    </div>
+    <div>${bi ? `
+      <div class="best">
+        ${bi.picture ? `<img src="${esc(bi.picture)}" alt="" loading="lazy" />` : ""}
+        <div><div class="lbl">${esc(t("best_lbl"))}</div><div class="nm">${esc(nameOf(bi))}</div>
+        <div class="why">${esc(catOf(bi))} · ${esc(best.protein ? t("best_reason", { g: best.protein }) : t("best_reason_np"))}${bi.kcal ? ` · ${bi.kcal} kcal` : ""}</div></div>
+      </div>` : `<div class="best none"><div><div class="lbl">${esc(t("no_best_lbl"))}</div><div class="why">${esc(t("no_best_why"))}</div></div></div>`}
+    </div>`;
+  $("#shareBtn").onclick = () => shareDay(day);
+  $("#askBtn").onclick = () => openAsk(day);
+  $("#reminderBtn").onclick = openReminder;
+}
+function dishCard(i, dayLabel) {
+  const c = COLORS[i.verdict];
+  const isBest = !dayLabel && personalBest(selectedDay())?.item?.id === i.id;
+  const fav = state.favs.has(favKey(i));
+  const hits = allergyHits(i);
+  const hitIds = new Set(hits.map((a) => a.id));
+  const photo = i.picture ? `<img class="photo" src="${esc(i.picture)}" alt="" loading="lazy" />` : `<div class="photo">🍽️</div>`;
+  const alt = altName(i) && altName(i) !== nameOf(i) ? `<div class="alt">${esc(altName(i))}</div>` : "";
+  const findings = i.findings.map((f) => `<li class="${f.severity}"><span>${SEV_ICON[f.severity]}</span><span>${esc(findingText(f))}</span></li>`).join("");
+  const allergens = (i.allergens || []).map((a) => {
+    const def = ALLERGENS.find((x) => x.id === a.id);
+    return `<span class="allergen ${hitIds.has(a.id) ? "hit" : ""}" title="${esc(def ? allergenName(def) : a.name)}">${esc(a.label)}</span>`;
+  }).join("");
+  const nutr = [i.kcal ? t("kcal", { n: i.kcal }) : "", i.protein ? t("protein", { g: Math.round(i.protein) }) : ""].filter(Boolean).join(" · ");
+  return `<article class="card dish ${c}">
+    <div class="top">${photo}
+      <div class="meta">
+        <div class="cat"><span>${dayLabel ? esc(dayLabel) + " · " : ""}${esc(catOf(i))}${i.sold_out ? `<span class="badge sold">${esc(t("sold_out"))}</span>` : ""}</span>
+          <button class="fav ${fav ? "on" : ""}" data-fav="${esc(favKey(i))}" title="${esc(t("fav_title"))}">❤️</button></div>
+        <div class="name">${esc(nameOf(i))}${isBest ? `<span class="badge best-b">${esc(t("best_badge"))}</span>` : ""}</div>
+        ${alt}
+        <span class="pill ${c}">${i.emoji} ${esc(t("v_" + i.verdict))}</span>
+        ${i.confirmed === "halal" ? `<span class="badge kitchen">${esc(t("kitchen_badge"))}</span>` : ""}
+        ${hits.length ? `<div class="allergy-hit">${esc(t("allergy_badge", { list: hits.map(allergenName).join(", ") }))}</div>` : ""}
+      </div>
+    </div>
+    ${findings ? `<ul class="findings">${findings}</ul>` : ""}
+    <div class="foot"><span>${esc(nutr)}</span><span>${allergens}</span></div>
+  </article>`;
+}
+function renderDishes() {
+  const el = $("#dishes");
+  const q = state.search.trim().toLowerCase();
+  let rows = [];
+  if (q) {
+    for (const d of state.week.days)
+      for (const i of visibleItems(d.items))
+        if ((i.name_de + " " + i.name_en + " " + i.category).toLowerCase().includes(q)) rows.push([i, weekdayOf(d.date, "short")]);
+  } else {
+    const day = selectedDay();
+    rows = day ? visibleItems(day.items).map((i) => [i, null]) : [];
+  }
+  rows = rows.filter(([i]) =>
+    state.filter === "all" ? true : state.filter === "fav" ? state.favs.has(favKey(i)) : i.verdict === state.filter);
+  const order = { halal: 0, unknown: 1, doubtful: 2, haram: 3 };
+  if (state.filter === "all" && !q) rows.sort((a, b) => order[a[0].verdict] - order[b[0].verdict]);
+  el.innerHTML = rows.length ? rows.map(([i, d]) => dishCard(i, d)).join("") : `<div class="card empty">${esc(t("no_match"))}</div>`;
+  const day = selectedDay();
+  const hidden = !q && day ? new Set(day.items.filter((i) => !(state.hideNight && i.night) && hiddenByAllergy(i)).map(favKey)).size : 0;
+  $("#allergyNote").hidden = !hidden;
+  $("#allergyNote").textContent = hidden === 1 ? t("hidden_one") : t("hidden_many", { n: hidden });
+}
+function renderOverview() {
+  const s = state.week.stats;
+  $("#weekOverview").innerHTML = state.week.days.map((d) =>
+    `<div class="ov-row" data-date="${d.date}"><span class="ov-day">${esc(weekdayOf(d.date))}</span>${statBar(d.stats, "ov-bar")}<span class="ov-pct">${d.stats.halal_pct}%</span></div>`
+  ).join("") + (s && s.total ? `<p class="muted" style="margin:10px 0 0">${t("week_total_html", { h: s.halal, t: s.total, p: s.halal_pct })}</p>` : "");
+}
+function renderTrend() {
+  const data = state.trend;
+  if (!data) return;
+  const W = 560, H = 190, pad = 24, bw = (W - pad * 2) / data.length;
+  const bars = data.map((w, k) => {
+    const x = pad + k * bw + 6, width = bw - 12, h = H - 50, label = `${t("wk_short")}${w.week}`;
+    if (!w.total) return `<text x="${x + width / 2}" y="${H - 30}" text-anchor="middle">–</text><text x="${x + width / 2}" y="${H - 8}" text-anchor="middle">${label}</text>`;
+    let y = 16; const parts = [];
+    for (const [key, col] of [["halal", "var(--green)"], ["doubtful", "var(--orange)"], ["haram", "var(--red)"], ["unknown", "var(--grey)"]]) {
+      const hh = (h * (w[key] || 0)) / w.total;
+      if (hh > 0) parts.push(`<rect x="${x}" y="${y}" width="${width}" height="${hh}" fill="${col}" rx="2"><title>${esc(t("v_" + key))}: ${w[key]}</title></rect>`);
+      y += hh;
+    }
+    const cur = w.week === state.week?.week && w.year === state.week?.year;
+    return `<g class="tw" data-date="${w.week_start}">${parts.join("")}
+      <text x="${x + width / 2}" y="11" text-anchor="middle" font-weight="700">${w.halal_pct}%</text>
+      <text x="${x + width / 2}" y="${H - 8}" text-anchor="middle" ${cur ? 'font-weight="700"' : ""}>${label}</text></g>`;
+  }).join("");
+  $("#trend").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("trend_aria"))}">${bars}</svg>
+    <div class="muted small">${t("trend_legend_html")}</div>`;
+  $$("#trend .tw").forEach((g) => g.addEventListener("click", () => loadWeek(g.dataset.date)));
+}
+function summaryText(day) {
+  const uniq = (v) => [...new Map(visibleItems(day.items).filter((i) => i.verdict === v).map((i) => [favKey(i), i])).values()];
+  const line = (i) => `• ${nameOf(i)} (${catOf(i)})`;
+  const best = day.best && day.items.find((i) => i.id === day.best.id);
+  const parts = [t("sum_title", { date: fmtDay(day.date, { weekday: "long", day: "2-digit", month: "2-digit" }), store: state.week.store })];
+  const h = uniq("halal"), d = uniq("doubtful"), x = uniq("haram");
+  if (h.length) parts.push("", t("sum_halal"), ...h.map(line));
+  if (d.length) parts.push("", t("sum_doubtful"), ...d.map((i) => {
+    const f = i.findings.find((f) => f.severity === "doubtful");
+    return `${line(i)}${f ? " – " + findingText(f) : ""}`;
+  }));
+  if (x.length) parts.push("", t("sum_haram"), ...x.map(line));
+  if (best) parts.push("", t("sum_best", { name: nameOf(best) }));
+  parts.push("", t("sum_link", { url: siteUrl() }));
+  return parts.join("\n");
+}
+async function shareDay(day) {
+  const text = summaryText(day);
+  if (navigator.share && matchMedia("(pointer: coarse)").matches) {
+    try { await navigator.share({ title: t("title"), text }); return; }
+    catch (e) { if (e.name === "AbortError") return; }
+  }
+  copyText(text, t("share_copied"));
+}
+function openAsk(day) {
+  const seen = new Map();
+  for (const i of visibleItems(day.items))
+    for (const f of i.findings)
+      if (f.ask && f.severity !== "ok" && !seen.has(f.ask)) seen.set(f.ask, f.ask_en || "");
+  const qs = [...seen.entries()];
+  $("#askList").innerHTML = qs.length
+    ? qs.map(([de, en]) => `<li><div class="q-de">🇩🇪 ${esc(de)}</div>${en ? `<div class="q-en">🇬🇧 ${esc(en)}</div>` : ""}</li>`).join("")
+    : `<li class="none">${esc(t("ask_none"))}</li>`;
+  $("#copyAskDe").hidden = $("#copyAskEn").hidden = !qs.length;
+  $("#copyAskDe").onclick = () => copyText("Hallo! Kurze Frage zum heutigen Menü:\n" + qs.map(([de]) => "- " + de).join("\n") + "\nDanke!", t("ask_copied"));
+  $("#copyAskEn").onclick = () => copyText("Hello! A quick question about today's menu:\n" + qs.map(([de, en]) => "- " + (en || de)).join("\n") + "\nThank you!", t("ask_copied"));
+  $("#askDialog").showModal();
+}
+async function copyText(text, msg) {
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); ta.remove();
+  }
+  toast(msg);
+}
+function updateAllergyBtn() {
+  const n = state.allergies.size;
+  $("#allergyBtn").textContent = n ? t("allergy_btn_n", { n }) : t("allergy_btn");
+  $("#allergyBtn").classList.toggle("active", n > 0);
+}
+function openAllergies() {
+  const draft = new Set(state.allergies);
+  const paint = () => {
+    $("#allergyList").innerHTML = ALLERGENS.map((a) =>
+      `<label class="allergy-item ${draft.has(a.id) ? "on" : ""}"><input type="checkbox" data-id="${a.id}" ${draft.has(a.id) ? "checked" : ""} /> <b>${a.code}</b> ${esc(allergenName(a))}</label>`).join("");
+    $$("#allergyList input").forEach((cb) => (cb.onchange = () => {
+      const id = Number(cb.dataset.id);
+      cb.checked ? draft.add(id) : draft.delete(id);
+      cb.closest("label").classList.toggle("on", cb.checked);
+    }));
+  };
+  paint();
+  $("#allergyHide").checked = state.hideAllergens;
+  $("#allergyClear").onclick = () => { draft.clear(); paint(); };
+  $("#allergySave").onclick = () => {
+    state.allergies = draft; state.hideAllergens = $("#allergyHide").checked;
+    store.set("allergies", [...draft]); store.set("hideAllergens", state.hideAllergens);
+    $("#allergyDialog").close();
+    updateAllergyBtn(); renderHero(); renderDishes();
+    toast(t("allergy_saved"));
+  };
+  $("#allergyDialog").showModal();
+}
+const PRAYERS = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+const toMin = (s) => { const [h, m] = String(s).slice(0, 5).split(":").map(Number); return h * 60 + m; };
+async function loadPrayer() {
+  const lat = Number(state.cfg.lat ?? 46.5950306), lng = Number(state.cfg.lng ?? 13.8556604);
+  const now = new Date();
+  const ds = `${p2(now.getDate())}-${p2(now.getMonth() + 1)}-${now.getFullYear()}`;
+  const key = `prayer:${ds}:${lat.toFixed(3)}:${lng.toFixed(3)}:${state.prayerMethod}:${state.prayerSchool}`;
+  let data = store.get(key, null);
+  if (!data) {
+    try {
+      const r = await fetch(`https://api.aladhan.com/v1/timings/${ds}?latitude=${lat}&longitude=${lng}&method=${state.prayerMethod}&school=${state.prayerSchool}`);
+      const j = await r.json();
+      data = { timings: j.data.timings, hijri: j.data.date.hijri };
+      Object.keys(localStorage).filter((k) => k.startsWith("hm-prayer:")).forEach((k) => localStorage.removeItem(k));
+      store.set(key, data);
+    } catch {
+      $("#prayer").hidden = true;
+      return;
+    }
+  }
+  state.prayer = { ...data, day: isoDay(now), city: state.cfg.city || "Villach" };
+  renderPrayer();
+}
+function renderPrayer() {
+  const p = state.prayer;
+  if (!p) return;
+  if (p.day !== isoDay(new Date())) { loadPrayer(); return; }
+  const now = new Date(), mins = now.getHours() * 60 + now.getMinutes();
+  const next = PRAYERS.find((n) => toMin(p.timings[n]) > mins);
+  let inTxt = "";
+  if (next) {
+    const diff = toMin(p.timings[next]) - mins;
+    inTxt = diff >= 60 ? `${Math.floor(diff / 60)} h ${diff % 60} min` : `${diff} min`;
+  }
+  $("#prayer").innerHTML = `<span class="pt-city">🕌 ${esc(p.city)}</span>` +
+    PRAYERS.map((n) => `<span class="pt ${n === next ? "next" : ""}"><b>${n}</b> ${esc(String(p.timings[n]).slice(0, 5))}</span>`).join("") +
+    (next ? `<span class="pt-next">${esc(t("prayer_next", { name: next, in: inTxt }))}</span>` : "") +
+    `<span class="pt-hijri">${esc(p.hijri.day)} ${esc(p.hijri.month.en)} ${esc(p.hijri.year)}</span>`;
+  $("#prayer").hidden = false;
+}
+function openPrayer() {
+  const p = state.prayer;
+  if (!p) return;
+  const rows = [["Fajr", "Fajr"], ["Sunrise", t("sunrise")], ["Dhuhr", "Dhuhr"], ["Asr", "Asr"], ["Maghrib", "Maghrib"], ["Isha", "Isha"]];
+  $("#prayerTable").innerHTML = `<div class="muted">${esc(p.city)} · ${esc(fmtDay(p.day, { weekday: "long", day: "numeric", month: "long" }))} · ${esc(p.hijri.day)} ${esc(p.hijri.month.en)} ${esc(p.hijri.year)}</div>` +
+    rows.map(([k, label]) => `<div class="prow"><span>${esc(label)}</span><b>${esc(String(p.timings[k]).slice(0, 5))}</b></div>`).join("");
+  $("#prayerMethod").value = String(state.prayerMethod);
+  $("#prayerSchool").value = String(state.prayerSchool);
+  const changed = async () => {
+    state.prayerMethod = Number($("#prayerMethod").value); state.prayerSchool = Number($("#prayerSchool").value);
+    store.set("prayerMethod", state.prayerMethod); store.set("prayerSchool", state.prayerSchool);
+    await loadPrayer(); openPrayer();
+  };
+  $("#prayerMethod").onchange = changed;
+  $("#prayerSchool").onchange = changed;
+  if (!$("#prayerDialog").open) $("#prayerDialog").showModal();
+}
+function printWeek() {
+  const wk = state.week;
+  if (!wk || !wk.days.length) return;
+  const uniq = (items, v) => [...new Map(items.filter((i) => !i.night && i.verdict === v).map((i) => [favKey(i), i])).values()];
+  const rows = wk.days.map((d) => {
+    const bestId = d.best?.id;
+    const halal = uniq(d.items, "halal").map((i) =>
+      `<li${i.id === bestId ? ' class="pbest"' : ""}>${i.id === bestId ? "⭐ " : ""}${esc(nameOf(i))} <small>${esc(catOf(i))}</small></li>`).join("");
+    const doubtful = uniq(d.items, "doubtful").map((i) => `<li>${esc(nameOf(i))}</li>`).join("");
+    return `<tr><td class="pday"><b>${esc(weekdayOf(d.date))}</b><br>${fmtDay(d.date, { day: "2-digit", month: "2-digit" })}</td>
+      <td><ul>${halal || "<li>–</li>"}</ul></td><td><ul>${doubtful || "<li>–</li>"}</ul></td></tr>`;
+  }).join("");
+  const qr = $("#qrTpl") ? $("#qrTpl").innerHTML : "";
+  const range = `${fmtDay(wk.week_start, { day: "2-digit", month: "2-digit" })} – ${fmtDay(addDays(wk.week_start, 6), { day: "2-digit", month: "2-digit", year: "numeric" })}`;
+  $("#printView").innerHTML = `
+    <div class="phead"><img src="icon-192.png" alt="" /><div><h1>${esc(t("print_title", { w: wk.week }))}</h1><div>${esc(range)} · ${esc(wk.store)}</div></div></div>
+    <table class="ptable"><thead><tr><th>${esc(t("print_day"))}</th><th>${esc(t("print_halal"))}</th><th>${esc(t("print_doubtful"))}</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="pfoot">${qr ? `<div class="pqr">${qr}</div>` : ""}<div><b>${esc(t("print_scan"))}</b><br>${esc(siteUrl())}<br><small>${esc(t("print_note"))}</small></div></div>`;
+  window.print();
+}
+function setStoreLink(cfg) {
+  $("#storeLink").textContent = `${cfg.store_name} · ${cfg.menu_name}`;
+  $("#storeLink").href = cfg.portal_url;
+}
+function shareUrl() {
+  const m = window.LocalApi.settings.menu;
+  const u = new URL(location.href);
+  u.search = new URLSearchParams({ menu: m.id, store: m.store, name: m.menu }).toString();
+  return u.toString();
+}
+function openSettings() {
+  const L = window.LocalApi;
+  let chosen = L.settings.menu;
+  const cur = () => { $("#curCanteen").textContent = `${chosen.store} · ${chosen.menu}`; };
+  cur();
+  $("#avoidInput").value = L.settings.avoid.join(", ");
+  const hosted = location.protocol.startsWith("http");
+  $("#copyLink").hidden = !hosted;
+  $("#shareHint").innerHTML = hosted ? esc(t("share_hosted")) : t("share_file_html");
+  $("#copyLink").onclick = () => copyText(shareUrl(), t("link_copied"));
+  const results = $("#canteenResults");
+  const search = async () => {
+    results.innerHTML = `<span class="muted">${esc(t("searching"))}</span>`;
+    try {
+      const hits = (await L.findMenus($("#canteenSearch").value)).slice(0, 60);
+      results.innerHTML = hits.length ? hits.map((h, k) =>
+        `<button type="button" data-k="${k}">${esc(h.store)} · ${esc(h.menu)} <small>${esc(h.city || "")}</small></button>`).join("")
+        : `<span class="muted">${esc(t("no_canteen"))}</span>`;
+      results.querySelectorAll("button").forEach((b) => (b.onclick = () => {
+        const h = hits[b.dataset.k];
+        chosen = { id: h.id, store: h.store, menu: h.menu, city: h.city, lat: h.lat, lng: h.lng };
+        cur();
+        results.querySelectorAll("button").forEach((x) => x.classList.toggle("picked", x === b));
+      }));
+    } catch { results.innerHTML = `<span class="status error">${esc(t("load_error"))}</span>`; }
+  };
+  $("#canteenSearch").oninput = () => { clearTimeout(search._t); search._t = setTimeout(search, 250); };
+  $("#saveSettings").onclick = async () => {
+    L.settings.menu = chosen;
+    L.settings.avoid = $("#avoidInput").value.split(",").map((s) => s.trim()).filter(Boolean);
+    $("#settingsDialog").close();
+    state.cfg = await api("/api/config");
+    setStoreLink(state.cfg);
+    loadWeek(state.selected || state.today); loadTrend(); loadPrayer();
+    toast(t("settings_saved"));
+  };
+  $("#settingsDialog").showModal();
+  if (!results.innerHTML) search();
+}
+let installPrompt = null;
+const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+function setupInstall() {
+  const btn = $("#installBtn");
+  if (location.protocol !== "https:" || isStandalone()) return;
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installPrompt = e; btn.hidden = false; });
+  window.addEventListener("appinstalled", () => { btn.hidden = true; toast(t("installed"), 4000); });
+  if (isIos()) btn.hidden = false;
+  btn.onclick = async () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      await installPrompt.userChoice.catch(() => null);
+      installPrompt = null; btn.hidden = true;
+    } else {
+      toast(t("install_ios"), 7000);
+    }
+  };
+}
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  $("#themeBtn").textContent = theme === "dark" ? "☀️" : "🌙";
+  store.set("theme", theme);
+}
+function applyLang() {
+  document.documentElement.lang = state.lang;
+  document.title = t("title");
+  $$("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  $$("[data-i18n-html]").forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
+  $$("[data-i18n-ph]").forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
+  $$("[data-i18n-title]").forEach((el) => { el.title = t(el.dataset.i18nTitle); });
+  $$("#langSeg button").forEach((b) => b.classList.toggle("active", b.dataset.lang === state.lang));
+  updateAllergyBtn();
+}
+document.addEventListener("click", (e) => {
+  const tab = e.target.closest(".daytab, .ov-row");
+  if (tab) {
+    state.selected = tab.dataset.date; state.search = ""; $("#search").value = "";
+    renderTabs(); renderHero(); renderDishes();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  const fav = e.target.closest(".fav");
+  if (fav) {
+    const k = fav.dataset.fav;
+    state.favs.has(k) ? state.favs.delete(k) : state.favs.add(k);
+    store.set("favs", [...state.favs]);
+    toast(state.favs.has(k) ? t("fav_added") : t("fav_removed"));
+    renderTabs(); renderHero(); renderDishes();
+  }
+  const chip = e.target.closest("#filterChips .chip");
+  if (chip) {
+    state.filter = chip.dataset.filter;
+    $$("#filterChips .chip").forEach((c) => c.classList.toggle("active", c === chip));
+    renderDishes();
+  }
+  const lb = e.target.closest("#langSeg button");
+  if (lb) {
+    state.lang = lb.dataset.lang; store.set("lang", state.lang);
+    applyLang(); render(); renderTrend(); renderPrayer();
+  }
+});
+$("#mode").addEventListener("change", (e) => {
+  state.mode = e.target.value; store.set("mode", state.mode);
+  loadWeek(state.selected || state.today); loadTrend();
+});
+$("#hideNight").addEventListener("change", (e) => { state.hideNight = e.target.checked; store.set("hideNight", state.hideNight); renderDishes(); });
+$("#search").addEventListener("input", (e) => { state.search = e.target.value; renderDishes(); });
+$("#prevWeek").onclick = () => loadWeek(addDays(state.week?.week_start || state.today, -7));
+$("#nextWeek").onclick = () => loadWeek(addDays(state.week?.week_start || state.today, 7));
+$("#todayBtn").onclick = () => loadWeek(state.today);
+$("#themeBtn").onclick = () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+$("#allergyBtn").onclick = openAllergies;
+$("#printBtn").onclick = printWeek;
+$("#prayer").onclick = openPrayer;
+(async function init() {
+  applyTheme(store.get("theme", matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+  applyLang();
+  $("#hideNight").checked = state.hideNight;
+  try {
+    state.cfg = await api("/api/config");
+    state.today = state.cfg.today || state.today;
+    state.mode = state.mode || state.cfg.default_mode || "standard";
+    setStoreLink(state.cfg);
+    if (state.cfg.standalone) { $("#settingsBtn").hidden = false; $("#settingsBtn").onclick = openSettings; }
+  } catch { state.mode = state.mode || "standard"; }
+  $("#mode").value = state.mode;
+  if (!store.get("welcomed", false)) $("#welcome").hidden = false;
+  $("#welcomeClose").onclick = () => { $("#welcome").hidden = true; store.set("welcomed", true); };
+  setupInstall();
+  loadPrayer();
+  setInterval(renderPrayer, 60000);
+  await loadWeek(state.today);
+  loadTrend();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "how_to_use": [
+    "Add an entry to the 'confirmed' list when the kitchen staff confirms something about a dish.",
+    "match: a word from the dish name (German or English), for example \"Paprikahendl\" or \"Zwiebelsuppe\".",
+    "result: \"halal\" or \"not-halal\".",
+    "note: what the kitchen said (optional). Use note_de and note_en to write it in both languages.",
+    "date: only for this one day, YYYY-MM-DD (optional). until: valid until this day, YYYY-MM-DD (optional).",
+    "A halal confirmation clears the doubtful points of a dish, but never overrides a pork label.",
+    "Copy the example below into the list, change it, and click 'Commit changes'. The website updates within a minute."
+  ],
+  "example": {
+    "match": "Paprikahendl",
+    "result": "halal",
+    "note_en": "Chicken from a halal-certified supplier (asked on 08.10.2026)",
+    "note_de": "Huhn von einem halal-zertifizierten Lieferanten (gefragt am 08.10.2026)",
+    "until": "2026-12-31"
+  },
+  "confirmed": []
+}
