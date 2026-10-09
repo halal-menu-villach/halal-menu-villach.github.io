@@ -5,8 +5,8 @@
 Which canteen dishes are halal-friendly today? The page loads the live menu of the canteen every time it is opened and checks each dish:
 
 - ✅ **Halal-friendly** – vegan, vegetarian or fish with no warning signs
-- ⚠️ **Doubtful** – meat without stated halal slaughter, meat stock or traces of alcohol
-- ❌ **Not halal** – pork, sausage, gelatine or alcohol (including wine found in the recipe data)
+- ⚠️ **Doubtful** – meat without stated halal slaughter, meat stock, or dishes that are usually made with alcohol
+- ❌ **Not halal** – pork, sausage, gelatine, or alcohol in the dish name (for example wine or beer)
 
 Also included: best halal pick of the day, polite questions for the kitchen in German and English, daily reminders (Windows / Outlook), allergy filter, prayer times, printable week overview, English and German interface, and installation as an app on phones.
 
